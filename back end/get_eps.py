@@ -9,8 +9,8 @@ output
 	-4: given URL is not valid
 
 test command:
-python get_eps.py --url "https://funbe13.com/나-혼자만-레벨업" --source 3
-get_eps.exe --url "https://funbe13.com/나-혼자만-레벨업" --source 3
+python get_eps.py --url "https://funbe16.com/나-혼자만-레벨업" --source 3
+get_eps.exe --url "https://funbe16.com/나-혼자만-레벨업" --source 3
 """
 
 from urllib.parse import urlparse
@@ -34,7 +34,7 @@ comic_soup = None
 def get_episodes_from_funbe():
 	try:
 		for i in comic_soup.select('#fboardlist > table > tr > td.content__title')[::-1]:
-			print("https://funbe13.com" + i.get("data-role"))
+			print("https://funbe16.com" + i.get("data-role"))
 
 	except AttributeError as err:  # if there are no results
 		print(err)

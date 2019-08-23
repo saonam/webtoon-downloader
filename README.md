@@ -1,11 +1,10 @@
 # Comic Downloader
 
->Go to [Download Page (다운로드 페이지)](https://github.com/AnonymousPomp/Comic-Downloader/releases/)
+>Go to [Download Page](https://github.com/AnonymousPomp/Comic-Downloader/releases/)
 
-For Korean people, we have prepared a [Korean version of the documentation (한국어 버전의 도큐멘테이션)](https://github.com/AnonymousPomp/Comic-Downloader/blob/master/README_KOR.md) too.
+This is a python + C# project that downloads web comic (webtoon) from various sources.
 
-This is a python + C# project that downloads web comic (webtoon) from various sources.*\
-*see [Future](#Future) for more information
+Disclaimer: The project is still in development, so don't expect much from it. But please be kind enough to tell me the problems or suggestions so I can add/fix it. :)
 
 # [Attention](#attention)
 >**I AM NOT RESPONSIBLE FOR WHAT YOU DO WITH MY PROGRAM**
@@ -31,13 +30,24 @@ Plus, there are some other cases such as domain name changes of the comic source
 > A more detailed explanation of how the program works will be added to the documentation
 
 
-# [developers](#dev)
->All the information listed from now on are for developers who want to learn more about my program
+# [for developers](#dev)
+>This is a overview of how the project works as a whole. A more detailed information is commented in the source code.
 
-# [How it works](#how)
-The project is divided into two large components: the **front end** and the **back end**
-- [Front end](https://github.com/AnonymousPomp/Comic-Downloader/tree/master/front%20end)
-    - The front end is where the user interacts with the program with GUI.\
-    Once the user passes the information needed to download the comic, it will be passed to the back end
-- [back end](https://github.com/AnonymousPomp/Comic-Downloader/tree/master/back%20end)
-    - The back end is where the magic happens. The  downloading, searching, stitching of images, etc.
+There are 5 programs in the back end:
+
+1.) search.exe:
+- search for a comic with given title.
+
+2.) parse.exe
+- returns information about the comic such as the author of the comic, how many episodes there are, the title of the comic, etc.
+
+3.) get_eps.exe
+- gets all the episodes in a given comic.
+
+4.) download.exe
+- download a episode of the comic. Putting this in a loop will download all the episodes in the comic.
+
+5.) merge_image.exe
+- since the images in the comics are fragmented, we need to "stitch" all the fragmented images into one file os its easier to read.
+
+By executing these programs from the C# front end, users can download a web comic with a simple GUI.

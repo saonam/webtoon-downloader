@@ -12,7 +12,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace ComicDownloader.ComicUserControl.supporting
+namespace ComicDownloader.supporting
 {
     public partial class form_comic_range_input : Form
     {
@@ -117,10 +117,7 @@ namespace ComicDownloader.ComicUserControl.supporting
             #endregion
 
             #region Check for errors
-            if (false)
-            {
-                MessageBox.Show("");
-            }
+            //error
             #endregion
 
             this.Close();

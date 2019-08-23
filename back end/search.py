@@ -9,15 +9,15 @@ where
 	0: https://comic.naver.com/webtoon/weekday.nhn
 	1: https://comic.naver.com/genre/bestChallenge.nhn
 	2: http://webtoon.daum.net
-	3: https://funbe13.com
+	3: https://funbe16.com
 output
 	-1: No search result
 	-2: Source not recognized
 	-3: Option not recognized
 
 test command:
-python search.py --query "나 혼자만 레벨업" --source 3
-search.exe --query "나 혼자만 레벨업" --source 3
+python search.py --query "나 혼자만" --source 3
+search.exe --query "나 혼자만" --source 3
 """
 
 from urllib.parse import urlparse
@@ -39,7 +39,7 @@ final = list()
 
 
 def search_funbe():
-	link = 'https://funbe13.com/bbs/search.php?sfl=wr_subject%7C%7Cwr_content&stx={0}'.format(comic_query)
+	link = 'https://funbe16.com/bbs/search.php?sfl=wr_subject%7C%7Cwr_content&stx={0}'.format(comic_query)
 
 	toon_html = requests.get(link).text
 	toon_soup = BeautifulSoup(toon_html, 'html.parser')
@@ -50,7 +50,7 @@ def search_funbe():
 		sys.exit(-1)
 
 	for i in search_results:
-		final.append("https://funbe13.com" + i.get('href'))
+		final.append("https://funbe16.com" + i.get('href'))
 
 
 def search_naver(best_challenge=False):

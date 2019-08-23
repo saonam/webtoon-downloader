@@ -1,4 +1,4 @@
-﻿namespace ComicDownloader.ComicUserControl.supporting
+﻿namespace ComicDownloader.supporting
 {
     partial class UC_search_result
     {

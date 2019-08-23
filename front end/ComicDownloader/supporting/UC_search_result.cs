@@ -11,7 +11,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace ComicDownloader.ComicUserControl.supporting
+namespace ComicDownloader.supporting
 {
     public partial class UC_search_result : UserControl
     {

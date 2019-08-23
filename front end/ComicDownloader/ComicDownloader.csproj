@@ -65,41 +65,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComicUserControl\supporting\form_comic_range_input.cs">
+    <Compile Include="supporting\form_comic_range_input.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ComicUserControl\supporting\form_comic_range_input.Designer.cs">
+    <Compile Include="supporting\form_comic_range_input.Designer.cs">
       <DependentUpon>form_comic_range_input.cs</DependentUpon>
     </Compile>
-    <Compile Include="ComicUserControl\supporting\UC_menu.cs">
+    <Compile Include="supporting\UC_search_result.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ComicUserControl\supporting\UC_menu.Designer.cs">
-      <DependentUpon>UC_menu.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ComicUserControl\supporting\UC_search_result.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ComicUserControl\supporting\UC_search_result.Designer.cs">
+    <Compile Include="supporting\UC_search_result.Designer.cs">
       <DependentUpon>UC_search_result.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ComicUserControl\UC_comic_downloading.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ComicUserControl\UC_comic_downloading.Designer.cs">
-      <DependentUpon>UC_comic_downloading.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ComicUserControl\UC_comic_search.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ComicUserControl\UC_comic_search.Designer.cs">
-      <DependentUpon>UC_comic_search.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ComicUserControl\UC_comic_view.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ComicUserControl\UC_comic_view.Designer.cs">
-      <DependentUpon>UC_comic_view.cs</DependentUpon>
     </Compile>
     <Compile Include="form_main.cs">
       <SubType>Form</SubType>
@@ -109,23 +85,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ComicUserControl\supporting\form_comic_range_input.resx">
+    <EmbeddedResource Include="supporting\form_comic_range_input.resx">
       <DependentUpon>form_comic_range_input.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ComicUserControl\supporting\UC_menu.resx">
-      <DependentUpon>UC_menu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ComicUserControl\supporting\UC_search_result.resx">
+    <EmbeddedResource Include="supporting\UC_search_result.resx">
       <DependentUpon>UC_search_result.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ComicUserControl\UC_comic_downloading.resx">
-      <DependentUpon>UC_comic_downloading.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ComicUserControl\UC_comic_search.resx">
-      <DependentUpon>UC_comic_search.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ComicUserControl\UC_comic_view.resx">
-      <DependentUpon>UC_comic_view.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="form_main.resx">
       <DependentUpon>form_main.cs</DependentUpon>

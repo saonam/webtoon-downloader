@@ -16,7 +16,7 @@ data:
 	4: number of episodes
 	5: thumbnail image link
 
-test command: python parse_comic.py --url "https://funbe13.com/나-혼자만-레벨업" --source 3
+test command: python parse_comic.py --url "https://funbe16.com/나-혼자만-레벨업" --source 3
 """
 
 from bs4 import BeautifulSoup
@@ -54,7 +54,7 @@ def parse_funbe():
 		data.append(comic_soup.find_all("span", attrs={"class": "bt_data"})[3].text[2:-1])
 		
 		# thumbnail image link
-		data.append("https://funbe13.com" + comic_soup.select_one("#containerCol > table.bt_view2 > tbody > tr:nth-child(1) > td > a > img").get("src"))
+		data.append("https://funbe16.com" + comic_soup.select_one("#containerCol > table.bt_view2 > tbody > tr:nth-child(1) > td > a > img").get("src"))
 		
 	except AttributeError as err:
 		print(err)
