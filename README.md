@@ -20,9 +20,9 @@ If you  have any **errors**, **stuck** at any point for whatever reason, or have
 
 >if the downloader doesn't work:\
 If you are living in south Korea, you may have to use a proxy or a VPN.
-I recommend using [GoodbyeDPI](https://github.com/Include-sys/GUI-for-GoodbyeDPI/releases) program.\
-<br>
-Plus, there are some other cases such as domain name changes of the comic source. In that case, Try to download the [earliest version](https://github.com/AnonymousPomp/Comic-Downloader/releases/latest) of the program, and tell me your issue at the [issue page](https://github.com/AnonymousPomp/Comic-Downloader/issues), or email me at <anonymouspomp@gmail.com>.
+I recommend using [GoodbyeDPI](https://github.com/Include-sys/GUI-for-GoodbyeDPI/releases) program.
+
+Plus, there are some other cases such as domain name changes of the comic source. In that case, Try to download the [latest version](https://github.com/AnonymousPomp/Comic-Downloader/releases/latest) of the program, and tell me your issue at the [issue page](https://github.com/AnonymousPomp/Comic-Downloader/issues), or email me at <anonymouspomp@gmail.com>.
 
 # [Future](#Future)
 >Currently, the script only downloads from [funbe](https://funbe13.com/) only. These will be added in the future: [Kakao webtoon](https://page.kakao.com), [Naver webtoon](https://comic.naver.com), [Naver Best Challenge](https://comic.naver.com/genre/bestChallenge.nhn), and [Daum webtoon](http://webtoon.daum.net/).
