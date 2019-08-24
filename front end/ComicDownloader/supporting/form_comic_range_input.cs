@@ -131,6 +131,7 @@ namespace ComicDownloader.supporting
         private void Bun_flat_btn_go_Click(object sender, EventArgs e)
         {
             Task.Factory.StartNew(() => DownloadLoop());
+            MessageBox.Show("Start downloading...\nYou may close the GUI");
             this.Visible = false;
         }
 

@@ -2,6 +2,9 @@
 """
 This script returns required information about a given comic
 
+how to make it an executable file:
+pyinstaller --onefile --icon=icon.ico parse_comic.py --hidden-import=queue
+
 output
 	-1: Error while requiring data
 	-2: Source not recognized

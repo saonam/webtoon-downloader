@@ -2,7 +2,8 @@
 """
 This script merges image into one file and save it in one higher level of folder
 
-pyinstaller --onefile --icon=icon.ico merge_image.py --hidden-import=queue
+how to make it an executable file:
+pyinstaller --onefile --icon=icon.ico merge_image.py
 """
 
 from natsort import natsorted
@@ -47,7 +48,7 @@ def merge_image(images_path, png=True, remove_after_merge=False):
         
         print("[INFO] saving image...")
         if True:
-            img_final.save(images_path.split("/")[-1] + " merged" + image_extension, image_type, quality=100)
+            img_final.save("../"+images_path.split("/")[-1] + " merged" + image_extension, image_type, quality=100)
         
         shutil.rmtree(images_path, ignore_errors=True)
         return True

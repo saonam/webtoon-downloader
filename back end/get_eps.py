@@ -2,6 +2,9 @@
 """
 This script returns a list of episodes of a given comic
 
+how to make it an executable file:
+pyinstaller --onefile --icon=icon.ico get_eps.py --hidden-import=queue
+
 output
 	-1: No episode in the given toon
 	-2: Source not recognized

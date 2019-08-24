@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Net;
 using System.Collections.Generic;
 using System.Linq;
+using System.Regex;
 
 namespace ComicDownloader
 {
@@ -211,7 +212,14 @@ namespace ComicDownloader
 
         private void Bun_flat_btn_search_Click(object sender, EventArgs e)
         {
-            Task.Factory.StartNew(() => Search());
+            if (Regex.Matches(bun_mat_textbox_search.Text, " ").Count <= 1)
+            {
+                Task.Factory.StartNew(() => Search());
+            }
+            else
+            {
+                MessageBox.Show("Please put no more than 2 spaces");
+            }
         }
 
         private void Bun_mat_textbox_search_KeyDown(object sender, KeyEventArgs e)
