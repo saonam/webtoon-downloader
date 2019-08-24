@@ -3,7 +3,7 @@
 >[다운로드 페이지](https://github.com/AnonymousPomp/Comic-Downloader/releases/) 바로가기
 
 이 프로젝트는 C#과 파이썬을 이용해 웹툰을 다운받는 프로그램입니다.
-ㄴ
+
 # [주의](#attention)
 >**여러분이 제 프로그램으로 무엇을 하든지 저에게는 책임이 없음을 밝힙니다**
 
