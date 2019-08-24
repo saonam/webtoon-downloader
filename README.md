@@ -1,50 +1,22 @@
-# Comic Downloader
+# 웹툰 다운로더
 
->Go to [Download Page](https://github.com/AnonymousPomp/Comic-Downloader/releases/)
+>[다운로드 페이지](https://github.com/AnonymousPomp/Comic-Downloader/releases/) 바로가기
 
-This is a python + C# project that downloads web comic (webtoon) from various sources.
+이 프로젝트는 C#과 파이썬을 이용해 웹툰을 다운받는 프로그램입니다.
+ㄴ
+# [주의](#attention)
+>**여러분이 제 프로그램으로 무엇을 하든지 저에게는 책임이 없음을 밝힙니다**
 
-Disclaimer: The project is still in development, so don't expect much from it. But please be kind enough to tell me the problems or suggestions so I can add/fix it. :)
+>상업적인 용도로 다운받는 행위는 엄연히 불법이오니, **오직** 개인 소장 용도로만 다운받아주시기 바랍니다.
 
-# [Attention](#attention)
->**I AM NOT RESPONSIBLE FOR WHAT YOU DO WITH MY PROGRAM**
+>프로그램 사용 중 **오류**가 나거나, 어디에서 어떠한 이유에서든지 **막히거나**,**제안, 혹은 의견** 등이 있다면 [이슈 페이지](https://github.com/AnonymousPomp/Comic-Downloader/issues)에 적거나, <anonymouspomp@gmail.com>로 메일을 주시기 바랍니다. 이러한 피드백은 개발자로서 저에게 아주 많은 도움이 되며, 하나하나 감사히 받도록 하겠습니다. :)
 
->Downloading comic for commercial use:\
-```Downloading web comic for commercial purpose is ILLEGAL. Downloaded comic ONLY for personal use only.```
+>다운로드가 안될시 [최신 버전](https://github.com/AnonymousPomp/Comic-Downloader/releases/latest)을 사용해보신 후, 여전히 작동이 되지 않는다면 위에 적힌 방법으로 저에게 알려주시기 바랍니다.
 
->The Comic is not English:\
-```Note that all the comics are in Korean. So if you are looking for an English comic downloader, this is not what you are looking for.```
+# [미래 버전](#Future)
+>현재 웹툰 다운로더는 [funbe.com](https://funbe16.com/)에서만 다운로드를 받을 수 있습니다. 미래 버전에서는 다음 중 일부가 추가될 예정입니다: [카카오 웹툰](https://page.kakao.com), [네이버 웹툰](https://comic.naver.com), [네이버 베스트 도전](https://comic.naver.com/genre/bestChallenge.nhn), [다음 웹툰](http://webtoon.daum.net/)
 
->If you have something to say to the developer:\
-If you  have any **errors**, **stuck** at any point for whatever reason, or have a **suggestion**, please be kind enough to tell me by writing it at the [issue page](https://github.com/AnonymousPomp/Comic-Downloader/issues), or emailing me at <anonymouspomp@gmail.com>. As a developer, this kind of feedback really helps me, and I will really appreciate each one of it. Thank You :)
+# [개발자들을 위해서](#dev)
+>여기 적힌 내용은 굉장히 제한적이며, 더 자세한 내용은 소스 코드에 주석 처리되어있습니다.
 
->if the downloader doesn't work:\
-If you are living in south Korea, you may have to use a proxy or a VPN.
-I recommend using [GoodbyeDPI](https://github.com/Include-sys/GUI-for-GoodbyeDPI/releases) program.
-
-Plus, there are some other cases such as domain name changes of the comic source. In that case, Try to download the [latest version](https://github.com/AnonymousPomp/Comic-Downloader/releases/latest) of the program, and tell me your issue at the [issue page](https://github.com/AnonymousPomp/Comic-Downloader/issues), or email me at <anonymouspomp@gmail.com>.
-
-# [Future](#Future)
->Currently, the script only downloads from [funbe](https://funbe13.com/) only. These will be added in the future: [Kakao webtoon](https://page.kakao.com), [Naver webtoon](https://comic.naver.com), [Naver Best Challenge](https://comic.naver.com/genre/bestChallenge.nhn), and [Daum webtoon](http://webtoon.daum.net/).
-
-> A more detailed explanation of how the program works will be added to the documentation
-
-
-# [for developers](#dev)
->This is a overview of how the project works as a whole. A more detailed information is commented in the source code.
-
-There are 5 programs in the back end:
-
-1.) search.exe:
-- search for a comic with given title.
-
-2.) parse.exe
-- returns information about the comic such as the author of the comic, how many episodes there are, the title of the comic, etc.
-
-3.) get_eps.exe
-- gets all the episodes in a given comic.
-
-4.) download.exe
-- this is where the actual downloading happens.
-
-By executing these programs from the C# front end, users can download a web comic with a simple GUI.
+>추가될 예정
