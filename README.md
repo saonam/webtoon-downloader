@@ -45,9 +45,6 @@ There are 5 programs in the back end:
 - gets all the episodes in a given comic.
 
 4.) download.exe
-- download a episode of the comic. Putting this in a loop will download all the episodes in the comic.
-
-5.) merge_image.exe
-- since the images in the comics are fragmented, we need to "stitch" all the fragmented images into one file os its easier to read.
+- this is where the actual downloading happens.
 
 By executing these programs from the C# front end, users can download a web comic with a simple GUI.
