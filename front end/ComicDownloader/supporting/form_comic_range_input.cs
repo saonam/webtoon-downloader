@@ -102,8 +102,8 @@ namespace ComicDownloader.supporting
         {
             #region Run search command
             ProcessStartInfo episodeDownloadProcessStartInfo = new ProcessStartInfo();
-            episodeDownloadProcessStartInfo.WorkingDirectory = @".\support_files\";
-            episodeDownloadProcessStartInfo.Arguments = "-u " + ComicURL + " -e " + (from-1).ToString() + "-" + (to-1).ToString() + @" -l ..\ -s 3";
+            episodeDownloadProcessStartInfo.WorkingDirectory = @"support_files\";
+            episodeDownloadProcessStartInfo.Arguments = "--url " + ComicURL + " --episode " + (from-1).ToString() + "-" + (to-1).ToString() + @" --source 3";
             episodeDownloadProcessStartInfo.CreateNoWindow = false;
             episodeDownloadProcessStartInfo.UseShellExecute = false;
             episodeDownloadProcessStartInfo.FileName = @"support_files\download.exe";

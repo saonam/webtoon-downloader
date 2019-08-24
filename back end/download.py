@@ -113,7 +113,7 @@ def stitch_image(images_path, png=True, remove_after_merge=False):
             y_offset += XY_value_list[i][1]  # and increase y offset!
         
         if True:
-            img_final.save("../" + images_path.split("/")[-1] + " merged" + image_extension, image_type, quality=100)
+            img_final.save("../" + images_path.split("/")[-1] + image_extension, image_type, quality=100)
         
         shutil.rmtree(images_path, ignore_errors=True)
         return True
@@ -555,7 +555,7 @@ try:
             
             if location[-1] != r"\\" or location[-1] != "/":
                 location += r"\\"
-        
+            
         elif option == "--episode" or option == "-e":
             try:
                 if "-" in argument:
@@ -585,7 +585,7 @@ except getopt.GetoptError as err:
     print("[ERROR] GetoptError:", err.with_traceback(sys.exc_info()[2]))
     sys.exit(-3)
 
-print("###############[ It might take a while for the download to start. ]###############")
+print("###############[ It may take a while for the download to start. ]###############")
 print()
 
 if source == COMIC_TYPE_NAVER:
@@ -612,4 +612,5 @@ else:
 print("[INFO] download complete")
 print()
 print("###############################################################")
-input("###############[ You may now close the program ]###############")
+print("###############[ You may now close the program ]###############")
+input("###############################################################")
