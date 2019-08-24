@@ -25,13 +25,18 @@ python download.py --url "https://comic.naver.com/webtoon/list.nhn?titleId=18355
 download.exe --url "https://comic.naver.com/webtoon/list.nhn?titleId=183559&weekday=mon" --source 0 --episode 1-1
 """
 
+from urllib.parse import quote, unquote
+from natsort import natsorted
 from bs4 import BeautifulSoup
-from urllib.parse import quote
+from PIL import Image
+import progressbar
 import subprocess
 import traceback
 import requests
+import warnings
 import shutil
 import getopt
+import glob
 import time
 import json
 import sys
@@ -41,12 +46,13 @@ import os
 
 ###############################################################################
 # Support
-COMPILED = False
 COMIC_TYPE_NAVER = 0
 COMIC_TYPE_NAVER_BEST_CHALLENGE = 1
 COMIC_TYPE_DAUM = 2
 COMIC_TYPE_FUNBE = 3
 headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
+
+warnings.filterwarnings("ignore")
 
 
 def override_where():
@@ -63,7 +69,6 @@ if hasattr(sys, "frozen"):
         big thanks to https://stackoverflow.com/users/2682863/user2682863
         got code form: https://stackoverflow.com/questions/46119901/
     """
-    COMPILED = True
     import certifi.core
     
     os.environ["REQUESTS_CA_BUNDLE"] = override_where()
@@ -77,6 +82,45 @@ if hasattr(sys, "frozen"):
     # imported before we replaced certifi.core.where
     requests.utils.DEFAULT_CA_BUNDLE_PATH = override_where()
     requests.adapters.DEFAULT_CA_BUNDLE_PATH = override_where()
+
+
+def stitch_image(images_path, png=True, remove_after_merge=False):
+    try:
+        image_extension = '.jpg'
+        image_type = 'JPEG'
+        
+        if png:
+            image_extension = '.png'
+            image_type = 'PNG'
+
+        images = natsorted(glob.glob(images_path + '/*.*'))  # get a list of images
+        
+        XY_value_list = [[Image.open(file).size[0], Image.open(file).size[1]] for file in images]  # get the dimension of all the images
+        height = int(sum([y for (x, y) in XY_value_list]))
+        
+        if height > 65530:  # maximum height of jpg image
+            image_extension = '.png'
+            image_type = 'PNG'
+        
+        # prepare a empty canvas (may take a lot of space of the memory)
+        img_final = Image.new('RGB', (max([x for (x, y) in XY_value_list]), height), "white")
+        
+        y_offset = 0
+        
+        # loop all images
+        for i in range(len(images)):
+            img_final.paste(Image.open(images[i]), (0, y_offset))  # paste image...
+            y_offset += XY_value_list[i][1]  # and increase y offset!
+        
+        if True:
+            img_final.save("../" + images_path.split("/")[-1] + " merged" + image_extension, image_type, quality=100)
+        
+        shutil.rmtree(images_path, ignore_errors=True)
+        return True
+    
+    except Exception as err:
+        print("[ERROR] while merging image:", err)
+        return False
 
 
 def mkdir_smart(name):
@@ -116,6 +160,14 @@ def auto_complete_URL(incompleteURL):
         return incompleteURL
     else:
         return "https://" + incompleteURL
+
+
+def smart_print(data):
+    sys.stdout.write("\r"+str(data))
+
+
+def clear():
+    sys.stdout.flush()
 
 
 def usage():
@@ -164,9 +216,7 @@ def down_funbe(url, location):
         ep_name = comic_soup.select_one("#thema_wrapper > div > div > div > div.view-wrap > h1").text.strip()  # get the episode name
         mkdir_smart(location + ep_name)  # create directory where the comic will be saved if it doesn't exists
         
-        for i in range(len(imgs_links)):  # for all the images in the comic
-            print("[INFO] downloading image #" + str(i + 1) + "/" + str(len(imgs_links)))  # image count (start from 1)
-            
+        for i in progressbar.progressbar(range(len(imgs_links))):  # for all the images in the comic
             img = requests.get(imgs_links[i]).content  # get image
             open(location + ep_name + "/" + str(i + 1) + ".jpg", "wb").write(img)  # write image
     
@@ -175,13 +225,9 @@ def down_funbe(url, location):
         sys.exit(-1)
     
     try:
-        if COMPILED:
-            FNULL = open(os.devnull, 'w')
-            args = 'merge_image.exe -d "%s"' % (location + ep_name)
-            subprocess.call(args, stdout=FNULL, stderr=FNULL, shell=False)
-        else:
-            import merge_image
-            merge_image.merge_image(location + ep_name)
+        print("[INFO] Stitching image...")
+        stitch_image(location + ep_name)
+
     except Exception:
         pass
 
@@ -210,7 +256,11 @@ def funbe_main(url, location, episode_start, episode_end):
         
         else:
             for i in range(episode_start, episode_end + 1):
+                print("##################################################")
+                print("Downloading: %s" % unquote(links[i]))
                 down_funbe(links[i], location)
+                print("##################################################")
+                print()
     
     except Exception as err:
         print(traceback.format_exc())
@@ -535,6 +585,9 @@ except getopt.GetoptError as err:
     print("[ERROR] GetoptError:", err.with_traceback(sys.exc_info()[2]))
     sys.exit(-3)
 
+print("###############[ It might take a while for the download to start. ]###############")
+print()
+
 if source == COMIC_TYPE_NAVER:
     # naver_main(title_id, title, episode_start, episode_end, location, False)
     pass
@@ -557,4 +610,6 @@ else:
     sys.exit(-2)
 
 print("[INFO] download complete")
-input("Press Enter to exit")
+print()
+print("###############################################################")
+input("###############[ You may now close the program ]###############")
