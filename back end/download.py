@@ -5,25 +5,19 @@ This script downloads web comic from a source
 how to make it an executable file:
 pyinstaller --onefile --icon=icon.ico download.py --hidden-import=queue
 
-output
-    -1: Invalid URL error
-    -2: Source not recognized
-    -3: Option not recognized
-    -4: Cannot connect to server
-    -5: Failed to create save directory
-    -6: Invalid episode range
-    -7: RSS error
-    -8: Failed to get cookie
-    -9: Error while requiring episode url
-    -10: no episode or the comic doesn't exist
+arguments:
+    -t or --test
+    -h or --help: executes usage() method
+    -u or --url
+    -l or --location
+    -e or --episode
+    -r or --rss
+    -s or --source
 
-test command:
-python download.py --url "https://funbe16.com/나-혼자만-레벨업" --source 3 --episode 1-1
-download.exe --url "https://funbe16.com/나-혼자만-레벨업" --source 3 --episode 1-1
-
-python download.py --url "https://comic.naver.com/webtoon/list.nhn?titleId=183559&weekday=mon" --source 0 --episode 1-1
-download.exe --url "https://comic.naver.com/webtoon/list.nhn?titleId=183559&weekday=mon" --source 0 --episode 1-1
 """
+
+print("###############[ It may take a while for the download to start. ]###############")
+print()
 
 from urllib.parse import quote, unquote
 from natsort import natsorted
@@ -40,12 +34,23 @@ import glob
 import time
 import json
 import sys
-import re
 import os
-
 
 ###############################################################################
 # Support
+ERR_INVALID_URL = -1
+ERR_SOURCE_NOT_RECOGNIZED = -2
+ERR_OPTION_NOT_RECOGNIZED = -3
+ERR_CANNOT_CONNECT_TO_SERVER = -4
+ERR_UNDEFINED = -5
+ERR_INVALID_RANGE = -6
+ERR_RSS = -7
+ERR_COOKIE = -8
+ERR_DOWNLOAD = -9
+ERR_NO_EPISODE = -10
+ERR_NO_IMAGES = -11
+ERR_WHILE_STITCHING_IMAGES = -12
+
 COMIC_TYPE_NAVER = 0
 COMIC_TYPE_NAVER_BEST_CHALLENGE = 1
 COMIC_TYPE_DAUM = 2
@@ -84,27 +89,20 @@ if hasattr(sys, "frozen"):
     requests.adapters.DEFAULT_CA_BUNDLE_PATH = override_where()
 
 
-def stitch_image(images_path, png=True, remove_after_merge=False):
+def stitch_image(images_path, save_path):
     try:
-        image_extension = '.jpg'
-        image_type = 'JPEG'
-        
-        if png:
-            image_extension = '.png'
-            image_type = 'PNG'
-
         images = natsorted(glob.glob(images_path + '/*.*'))  # get a list of images
         
         XY_value_list = [[Image.open(file).size[0], Image.open(file).size[1]] for file in images]  # get the dimension of all the images
         height = int(sum([y for (x, y) in XY_value_list]))
         
-        if height > 65530:  # maximum height of jpg image
-            image_extension = '.png'
-            image_type = 'PNG'
-        
         # prepare a empty canvas (may take a lot of space of the memory)
-        img_final = Image.new('RGB', (max([x for (x, y) in XY_value_list]), height), "white")
-        
+        try:
+            img_final = Image.new('RGB', (max([x for (x, y) in XY_value_list]), height), "white")
+        except ValueError:
+            print("[ERROR] No images to stitch")
+            print(traceback.format_exc())
+            sys.exit(ERR_NO_IMAGES)
         y_offset = 0
         
         # loop all images
@@ -112,15 +110,12 @@ def stitch_image(images_path, png=True, remove_after_merge=False):
             img_final.paste(Image.open(images[i]), (0, y_offset))  # paste image...
             y_offset += XY_value_list[i][1]  # and increase y offset!
         
-        if True:
-            img_final.save("../" + images_path.split("/")[-1] + image_extension, image_type, quality=100)
-        
-        shutil.rmtree(images_path, ignore_errors=True)
-        return True
+        img_final.save(save_path.split("/")[-1] + ".png", "PNG", quality=100)
     
     except Exception as err:
-        print("[ERROR] while merging image:", err)
-        return False
+        print("[ERROR] while stitching image:", err)
+        print(traceback.format_exc())
+        sys.exit(ERR_WHILE_STITCHING_IMAGES)
 
 
 def mkdir_smart(name):
@@ -162,14 +157,6 @@ def auto_complete_URL(incompleteURL):
         return "https://" + incompleteURL
 
 
-def smart_print(data):
-    sys.stdout.write("\r"+str(data))
-
-
-def clear():
-    sys.stdout.flush()
-
-
 def usage():
     """
         A function that prints helpful information about how to use the program
@@ -178,23 +165,23 @@ def usage():
     print("Help:")
     print()
     print("options:")
-    print("\t --help						   (Shows helpful information)")
-    print("\t --url")
-    print("\t --episode <episode range>       (default: 1-1)")
-    print("\t --location <output directory>   (default: .\\)")
-    print("\t --source <daum or naver>        (default: naver)")
-    print("\t --merge                         (merge)")
-    print("\t --png                           (Save as PNG. (only available with '-m')")
+    print("\t -h or --help")
+    print("\t -u or --url <comic url>")
+    print("\t -e or --episode <episode range>")
+    print("\t -l or --location <output directory>")
+    print("\t -s or --source <0:NAVER   1:NAVER_BEST_CHALLENGE   2:DAUM   3:FUNBE>  (only source 3 is available at the moment)")
+    print("\t -r or --rss <rss> (will be utilized when daum comic is supported)")
     print()
-    print()
-    print("sample:")
-    print("		downloader.exe --url <link> --episode 1-1")
+    print("How to use:")
+    print("\t download.exe -u <link> -e <start>-<end> -s <source_index>")
+    print("Example:")
+    print("\t download.exe --url \"https://funbe16.com/나-혼자만-레벨업\" --source 3 --episode 85-85")
     print()
 
 
 ###############################################################################
 # funbe
-def down_funbe(url, location):
+def down_funbe(url, title, location):
     try:
         from selenium import webdriver
         driver = webdriver.PhantomJS()
@@ -203,9 +190,10 @@ def down_funbe(url, location):
         comic_html = driver.page_source
         comic_soup = BeautifulSoup(comic_html, 'html.parser')
     
-    except requests.exceptions.ConnectionError as err:
-        print("[ERROR] Cannot connect to funbe server please check your internet connection\n\n", err.with_traceback(sys.exc_info()[2]))
-        sys.exit(-4)
+    except requests.exceptions.ConnectionError:
+        print("[ERROR] Cannot connect to funbe server. please check your internet connection")
+        print(traceback.format_exc())
+        sys.exit(ERR_CANNOT_CONNECT_TO_SERVER)
     
     try:
         # acquire list of urls of each image that composes the entire comic
@@ -214,21 +202,25 @@ def down_funbe(url, location):
         
         # actual downloading happens here
         ep_name = comic_soup.select_one("#thema_wrapper > div > div > div > div.view-wrap > h1").text.strip()  # get the episode name
-        mkdir_smart(location + ep_name)  # create directory where the comic will be saved if it doesn't exists
+        mkdir_smart(title + "/" + ep_name)  # create directory where the comic will be saved if it doesn't exists
         
         for i in progressbar.progressbar(range(len(imgs_links))):  # for all the images in the comic
             img = requests.get(imgs_links[i]).content  # get image
-            open(location + ep_name + "/" + str(i + 1) + ".jpg", "wb").write(img)  # write image
+            open(title + "/" + ep_name + "/" + str(i + 1) + ".jpg", "wb").write(img)  # write image
     
-    except requests.exceptions.MissingSchema as err:
-        print("[ERROR] The given URL link is invalid:", err.with_traceback(sys.exc_info()[2]))
-        sys.exit(-1)
+    except requests.exceptions.MissingSchema:
+        print("[ERROR] The given URL link is invalid")
+        print(traceback.format_exc())
+        sys.exit(ERR_INVALID_URL)
     
     try:
         print("[INFO] Stitching image...")
-        stitch_image(location + ep_name)
-
+        stitch_image(title + "/" + ep_name, location + "/" + title + "/" + ep_name)
+        shutil.rmtree(title, ignore_errors=True)
+        
     except Exception:
+        print("[ERROR] Error while stitching images")
+        print(traceback.format_exc())
         pass
 
 
@@ -240,31 +232,34 @@ def funbe_main(url, location, episode_start, episode_end):
         comic_html = requests.get(url, headers=headers).text
         comic_soup = BeautifulSoup(comic_html, "html.parser")
     
-    except requests.exceptions.ConnectionError as err:
-        print("[ERROR] Cannot connect to funbe server please check your internet connection\n\n", err.with_traceback(sys.exc_info()[2]))
-        sys.exit(-4)
+    except requests.exceptions.ConnectionError:
+        print("[ERROR] Cannot connect to funbe server please check your internet connection")
+        print(traceback.format_exc())
+        sys.exit(ERR_CANNOT_CONNECT_TO_SERVER)
     
     try:
+        title = str(comic_soup.select_one("#bo_list_total > span").text).split("|")[0].strip()
         links = ["https://funbe16.com" + quote(i.get("data-role")) for i in comic_soup.select("#fboardlist > table > tr > td.content__title")][::-1]  # [::-1] flips the list so it starts from episode 1
         
         if episode_start == episode_end and len(links) != 0:
-            down_funbe(links[episode_end], location)
+            down_funbe(links[episode_end], title, location)
         
         elif len(links) == 0:
             print("[ERROR] there are no episodes in the given comic or the comic doesn't exist")
-            sys.exit(-10)
+            sys.exit(ERR_NO_EPISODE)
         
         else:
             for i in range(episode_start, episode_end + 1):
                 print("##################################################")
                 print("Downloading: %s" % unquote(links[i]))
-                down_funbe(links[i], location)
+                down_funbe(links[i], title, location)
                 print("##################################################")
                 print()
     
-    except Exception as err:
+    except Exception:
+        print("[ERROR] Error while downloading images")
         print(traceback.format_exc())
-        sys.exit(-9)
+        sys.exit(ERR_DOWNLOAD)
 
 
 ###############################################################################
@@ -302,7 +297,7 @@ def naver_main(title_id, title, episode_start, episode_end, output_dir, best):
     
     if episode_start > episode_end:
         print("[ERROR] Incorrect episode range")
-        sys.exit(-6)
+        sys.exit(ERR_INVALID_RANGE)
     
     mkdir_smart(output_dir + title)
     
@@ -394,7 +389,7 @@ def parsing_rss(rss):
     
     if not os.path.isfile(".\\out.output"):
         print("[ERROR] Failed download RSS file.")
-        sys.exit(-7)
+        sys.exit(ERR_RSS)
     
     output_file = open(".\\out.output", "r")
     for line in output_file.readlines():
@@ -442,7 +437,7 @@ def get_cookie(comic_id):
         return cookie
     
     print("[ERROR] Failed get cookie")
-    sys.exit(-8)
+    sys.exit(ERR_COOKIE)
 
 
 def get_imginfo(comic_id, cookie):
@@ -459,7 +454,7 @@ def get_imginfo(comic_id, cookie):
     
     if not os.path.isfile(".\\out.output"):
         print("[ERROR] Failed download page.")
-        sys.exit(-4)
+        sys.exit(ERR_CANNOT_CONNECT_TO_SERVER)
     
     output_file = open(".\\out.output", "r")
     comic_dict = json.loads(output_file.read(), encoding="utf8")
@@ -474,7 +469,7 @@ def daum_main(rss, title, episode_start, episode_end, output_dir):
     
     if len(idlist) < 1:
         print("[ERROR] Not found episode in RSS")
-        sys.exit(-7)
+        sys.exit(ERR_RSS)
     
     episode = 0
     cookie = None
@@ -522,7 +517,7 @@ def daum_main(rss, title, episode_start, episode_end, output_dir):
             result = os.system(wget_cmd.encode("euc-kr"))
             if result != 0:
                 print("[ERROR] Failed download")
-                sys.exit(-4)
+                sys.exit(ERR_CANNOT_CONNECT_TO_SERVER)
             
             img_list.append(output_name)
 
@@ -530,32 +525,37 @@ def daum_main(rss, title, episode_start, episode_end, output_dir):
 ###############################################################################
 # Main
 
+source = -1
 url = None
-location = r".\\"
-rss = None
+location = ""
 episode_start = 1
 episode_end = 1
-source = None
 
+
+rss = None
 try:
-    options, arguments = getopt.getopt(sys.argv[1:], "hmu:l:e:r:s:", ["help", "merge", "url=", "location=", "episode=", "rss=", "source="])
+    options, arguments = getopt.getopt(sys.argv[1:], "thu:l:e:r:s:", ["test", "help", "url=", "location=", "episode=", "rss=", "source="])
     
     for option, argument in options:
-        if option == "--help" or option == "-h":
-            usage()
+        if option == "--test" or option == "-t":
+            source = 3
+            url = "https://funbe16.com/나-혼자만-레벨업"
+            episode_start, episode_end = 85, 85
         
-        elif option == "--merge" or option == "-m":
-            merge = True
+        elif option == "--help" or option == "-h":
+            usage()
         
         elif option == "--url" or option == "-u":
             url = str(argument)
         
         elif option == "--location" or option == "-l":
             location = str(argument)
-            
-            if location[-1] != r"\\" or location[-1] != "/":
-                location += r"\\"
-            
+            while True:
+                if location[-1] == "/" or location[-1] == "\\":
+                    location = location[:-1]
+                else:
+                    break
+
         elif option == "--episode" or option == "-e":
             try:
                 if "-" in argument:
@@ -566,7 +566,7 @@ try:
                     episode_start = int(argument)
                     episode_end = int(argument)
             
-            except Exception as err:
+            except Exception:
                 print("[ERROR] Incorrect episode range")
                 print(traceback.format_exc())
                 usage()
@@ -579,14 +579,12 @@ try:
         
         else:
             print("[ERROR] Unknown argument detected:", option)
-            sys.exit(-3)
+            sys.exit(ERR_OPTION_NOT_RECOGNIZED)
 
 except getopt.GetoptError as err:
-    print("[ERROR] GetoptError:", err.with_traceback(sys.exc_info()[2]))
-    sys.exit(-3)
-
-print("###############[ It may take a while for the download to start. ]###############")
-print()
+    print("[ERROR] GetoptError:", err)
+    print(traceback.format_exc())
+    sys.exit(ERR_OPTION_NOT_RECOGNIZED)
 
 if source == COMIC_TYPE_NAVER:
     # naver_main(title_id, title, episode_start, episode_end, location, False)
@@ -605,9 +603,9 @@ elif source == COMIC_TYPE_FUNBE:
     pass
 
 else:
-    print("[ERROR] Unknown comic source: " + source)
+    print("[ERROR] Unknown comic source: %s" % source)
     usage()
-    sys.exit(-2)
+    sys.exit(ERR_SOURCE_NOT_RECOGNIZED)
 
 print("[INFO] download complete")
 print()
