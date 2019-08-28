@@ -33,6 +33,8 @@
             this.bun_flat_btn_show_error = new Bunifu.Framework.UI.BunifuFlatButton();
             this.bun_elipse = new Bunifu.Framework.UI.BunifuElipse(this.components);
             this.pan_drag = new System.Windows.Forms.Panel();
+            this.lab_main = new System.Windows.Forms.Label();
+            this.bun_flat_btn_minimize = new Bunifu.Framework.UI.BunifuFlatButton();
             this.bun_flat_btn_view = new Bunifu.Framework.UI.BunifuFlatButton();
             this.bun_fat_btn_close = new Bunifu.Framework.UI.BunifuFlatButton();
             this.bun_drag_control_main = new Bunifu.Framework.UI.BunifuDragControl(this.components);
@@ -42,7 +44,7 @@
             this.rich_textbox_status = new System.Windows.Forms.RichTextBox();
             this.bun_flat_btn_search = new Bunifu.Framework.UI.BunifuFlatButton();
             this.flow_layout_panel_main = new System.Windows.Forms.FlowLayoutPanel();
-            this.bun_flat_btn_minimize = new Bunifu.Framework.UI.BunifuFlatButton();
+            this.bun_drag_control_sub = new Bunifu.Framework.UI.BunifuDragControl(this.components);
             this.pan_drag.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,14 +95,61 @@
             this.pan_drag.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pan_drag.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.pan_drag.Controls.Add(this.lab_main);
             this.pan_drag.Controls.Add(this.bun_flat_btn_minimize);
             this.pan_drag.Controls.Add(this.bun_flat_btn_view);
             this.pan_drag.Controls.Add(this.bun_flat_btn_show_error);
             this.pan_drag.Controls.Add(this.bun_fat_btn_close);
+            this.pan_drag.ForeColor = System.Drawing.SystemColors.Control;
             this.pan_drag.Location = new System.Drawing.Point(0, 0);
             this.pan_drag.Name = "pan_drag";
             this.pan_drag.Size = new System.Drawing.Size(1050, 40);
             this.pan_drag.TabIndex = 15;
+            // 
+            // lab_main
+            // 
+            this.lab_main.Font = new System.Drawing.Font("Gulim", 16F);
+            this.lab_main.Location = new System.Drawing.Point(0, 0);
+            this.lab_main.Name = "lab_main";
+            this.lab_main.Size = new System.Drawing.Size(320, 40);
+            this.lab_main.TabIndex = 12;
+            this.lab_main.Text = "Comic Downloader v2.2";
+            this.lab_main.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // bun_flat_btn_minimize
+            // 
+            this.bun_flat_btn_minimize.Activecolor = System.Drawing.SystemColors.HotTrack;
+            this.bun_flat_btn_minimize.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.bun_flat_btn_minimize.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bun_flat_btn_minimize.BorderRadius = 0;
+            this.bun_flat_btn_minimize.ButtonText = "";
+            this.bun_flat_btn_minimize.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.bun_flat_btn_minimize.DisabledColor = System.Drawing.Color.Gray;
+            this.bun_flat_btn_minimize.Iconcolor = System.Drawing.Color.Transparent;
+            this.bun_flat_btn_minimize.Iconimage = ((System.Drawing.Image)(resources.GetObject("bun_flat_btn_minimize.Iconimage")));
+            this.bun_flat_btn_minimize.Iconimage_right = null;
+            this.bun_flat_btn_minimize.Iconimage_right_Selected = null;
+            this.bun_flat_btn_minimize.Iconimage_Selected = null;
+            this.bun_flat_btn_minimize.IconMarginLeft = 0;
+            this.bun_flat_btn_minimize.IconMarginRight = 0;
+            this.bun_flat_btn_minimize.IconRightVisible = true;
+            this.bun_flat_btn_minimize.IconRightZoom = 0D;
+            this.bun_flat_btn_minimize.IconVisible = true;
+            this.bun_flat_btn_minimize.IconZoom = 50D;
+            this.bun_flat_btn_minimize.IsTab = false;
+            this.bun_flat_btn_minimize.Location = new System.Drawing.Point(970, 0);
+            this.bun_flat_btn_minimize.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.bun_flat_btn_minimize.Name = "bun_flat_btn_minimize";
+            this.bun_flat_btn_minimize.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.bun_flat_btn_minimize.OnHovercolor = System.Drawing.SystemColors.HotTrack;
+            this.bun_flat_btn_minimize.OnHoverTextColor = System.Drawing.Color.White;
+            this.bun_flat_btn_minimize.selected = false;
+            this.bun_flat_btn_minimize.Size = new System.Drawing.Size(41, 41);
+            this.bun_flat_btn_minimize.TabIndex = 11;
+            this.bun_flat_btn_minimize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bun_flat_btn_minimize.Textcolor = System.Drawing.Color.White;
+            this.bun_flat_btn_minimize.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bun_flat_btn_minimize.Click += new System.EventHandler(this.Bun_flat_btn_minimize_Click);
             // 
             // bun_flat_btn_view
             // 
@@ -123,7 +172,7 @@
             this.bun_flat_btn_view.IconVisible = true;
             this.bun_flat_btn_view.IconZoom = 90D;
             this.bun_flat_btn_view.IsTab = false;
-            this.bun_flat_btn_view.Location = new System.Drawing.Point(0, 0);
+            this.bun_flat_btn_view.Location = new System.Drawing.Point(680, 0);
             this.bun_flat_btn_view.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.bun_flat_btn_view.Name = "bun_flat_btn_view";
             this.bun_flat_btn_view.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
@@ -270,6 +319,7 @@
             this.bun_flat_btn_search.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bun_flat_btn_search.Textcolor = System.Drawing.Color.White;
             this.bun_flat_btn_search.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bun_flat_btn_search.Click += new System.EventHandler(this.Bun_flat_btn_search_Click);
             // 
             // flow_layout_panel_main
             // 
@@ -279,40 +329,12 @@
             this.flow_layout_panel_main.Size = new System.Drawing.Size(1050, 633);
             this.flow_layout_panel_main.TabIndex = 18;
             // 
-            // bun_flat_btn_minimize
+            // bun_drag_control_sub
             // 
-            this.bun_flat_btn_minimize.Activecolor = System.Drawing.SystemColors.HotTrack;
-            this.bun_flat_btn_minimize.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.bun_flat_btn_minimize.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.bun_flat_btn_minimize.BorderRadius = 0;
-            this.bun_flat_btn_minimize.ButtonText = "";
-            this.bun_flat_btn_minimize.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.bun_flat_btn_minimize.DisabledColor = System.Drawing.Color.Gray;
-            this.bun_flat_btn_minimize.Iconcolor = System.Drawing.Color.Transparent;
-            this.bun_flat_btn_minimize.Iconimage = ((System.Drawing.Image)(resources.GetObject("bun_flat_btn_minimize.Iconimage")));
-            this.bun_flat_btn_minimize.Iconimage_right = null;
-            this.bun_flat_btn_minimize.Iconimage_right_Selected = null;
-            this.bun_flat_btn_minimize.Iconimage_Selected = null;
-            this.bun_flat_btn_minimize.IconMarginLeft = 0;
-            this.bun_flat_btn_minimize.IconMarginRight = 0;
-            this.bun_flat_btn_minimize.IconRightVisible = true;
-            this.bun_flat_btn_minimize.IconRightZoom = 0D;
-            this.bun_flat_btn_minimize.IconVisible = true;
-            this.bun_flat_btn_minimize.IconZoom = 50D;
-            this.bun_flat_btn_minimize.IsTab = false;
-            this.bun_flat_btn_minimize.Location = new System.Drawing.Point(970, 0);
-            this.bun_flat_btn_minimize.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.bun_flat_btn_minimize.Name = "bun_flat_btn_minimize";
-            this.bun_flat_btn_minimize.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
-            this.bun_flat_btn_minimize.OnHovercolor = System.Drawing.SystemColors.HotTrack;
-            this.bun_flat_btn_minimize.OnHoverTextColor = System.Drawing.Color.White;
-            this.bun_flat_btn_minimize.selected = false;
-            this.bun_flat_btn_minimize.Size = new System.Drawing.Size(41, 41);
-            this.bun_flat_btn_minimize.TabIndex = 11;
-            this.bun_flat_btn_minimize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.bun_flat_btn_minimize.Textcolor = System.Drawing.Color.White;
-            this.bun_flat_btn_minimize.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bun_flat_btn_minimize.Click += new System.EventHandler(this.Bun_flat_btn_minimize_Click);
+            this.bun_drag_control_sub.Fixed = true;
+            this.bun_drag_control_sub.Horizontal = true;
+            this.bun_drag_control_sub.TargetControl = this.lab_main;
+            this.bun_drag_control_sub.Vertical = true;
             // 
             // form_main
             // 
@@ -348,6 +370,8 @@
         private Bunifu.Framework.UI.BunifuFlatButton bun_flat_btn_search;
         public System.Windows.Forms.FlowLayoutPanel flow_layout_panel_main;
         private Bunifu.Framework.UI.BunifuFlatButton bun_flat_btn_minimize;
+        private System.Windows.Forms.Label lab_main;
+        public Bunifu.Framework.UI.BunifuDragControl bun_drag_control_sub;
     }
 }
 

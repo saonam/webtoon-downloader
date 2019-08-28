@@ -17,6 +17,8 @@ This is a C# and python project that downloads web comic using C# and python.
 
 >Some of the comics includes PG16+ contents (including PG19).
 
+>All comics include watermarks. A watermark remover will be added in the near future
+
 # How to use
 By clicking the planet icon, ...
 
@@ -28,6 +30,12 @@ By clicking the planet icon, ...
 >- Basic knowledge about C#
 >- Basic knowledge about command prompt (cmd)
 >- Basic knowledge about VCS(version control system) (git)
+
+>This Project is protected by [CC BY License 4.0](https://creativecommons.org/licenses/by/4.0/)
+>
+>You are allowed to distribute, remix, tweak, and build up on the project, even commercially, as long as you put a credit for the original creation.
+You can find more information [Here](https://en.wikipedia.org/wiki/Creative_Commons_license#Types_of_licenses)
+
 
 Development Environment:
 - Python 3.6.5 with Pycharm
@@ -67,8 +75,10 @@ If you want to test the code after editing the source code, pass "-t" or "--test
 
 >일부 웹툰들은 16금 이상의 내용을 포함하고 있사오니(19금 포함), 사용에 주의해주시기 바랍니다.
 
+>모든 웹툰은 워터마크를 포함하고 있습니다.
+
 # 사용법
-행성 모양의 아이콘을 클릭하시면 ...
+행성 모양의 아이콘을 클릭하시면 ... <추가될 예정>
 
 # 개발자들을 위해서
 >여기서부터 나오는 모든 내용은 저의 프로그램을 사용하고 싶은 개발자들을 위한 내용들입니다. 일반 사용자들은 읽지 않으셔도 상관 없습니다.

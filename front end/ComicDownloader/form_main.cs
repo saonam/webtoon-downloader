@@ -160,17 +160,17 @@ namespace ComicDownloader
                     }
                     #endregion
 
-                    #region Actual filling
+                    #region filling elements
                     try
                     {
-                        elements[i] = new supporting.UC_search_result();
+                        elements[i] = new supporting.UC_search_result(episodeParsedData.GetRange(0, episodeParsedData.Count - 7));
                         elements[i].ComicURL = URLList[i];
                         elements[i].lab_day.Text = "day of update: No information";
-                        elements[i].lab_main.Text = episodeParsedData[0];
-                        elements[i].rich_textbox_description.Text = episodeParsedData[1];
-                        elements[i].lab_author.Text = "Author: " + episodeParsedData[2];
-                        elements[i].lab_last_update.Text = "Last update: " + episodeParsedData[3];
-                        if (int.TryParse(episodeParsedData[4], out int totalEpisode))
+                        elements[i].lab_main.Text = episodeParsedData[episodeParsedData.Count - 6];
+                        elements[i].rich_textbox_description.Text = episodeParsedData[episodeParsedData.Count - 5];
+                        elements[i].lab_author.Text = "Author: " + episodeParsedData[episodeParsedData.Count - 4];
+                        elements[i].lab_last_update.Text = "Last update: " + episodeParsedData[episodeParsedData.Count - 3];
+                        if (int.TryParse(episodeParsedData[episodeParsedData.Count - 2], out int totalEpisode))
                         {
                             elements[i].lab_total_eps.Text = "Total episodes: " + totalEpisode.ToString();
                         }
@@ -179,7 +179,7 @@ namespace ComicDownloader
                             elements[i].lab_total_eps.Text = "Total episodes: No information";
                         }
 
-                        Stream ThumbnailImageStream = WebRequest.Create(episodeParsedData[5]).GetResponse().GetResponseStream();
+                        Stream ThumbnailImageStream = WebRequest.Create(episodeParsedData[episodeParsedData.Count - 1]).GetResponse().GetResponseStream();
 
                         elements[i].pict_box_main.Image = Bitmap.FromStream(ThumbnailImageStream);
 
@@ -218,7 +218,7 @@ namespace ComicDownloader
             }
             else
             {
-                MessageBox.Show("Please put no more than 2 spaces");
+                MessageBox.Show("Too many spaces!!");
             }
         }
 
