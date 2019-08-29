@@ -1,19 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-This script downloads web comic from a source
+more information cam be found at usage()
 
 how to make it an executable file:
 pyinstaller --onefile --icon=icon.ico download.py --hidden-import=queue
-
-arguments:
-    -t or --test
-    -h or --help: executes usage() method
-    -u or --url
-    -l or --location
-    -e or --episode
-    -r or --rss
-    -s or --source
-
 """
 
 print("###############[ It may take a while for the download to start. ]###############")
@@ -58,22 +48,17 @@ COMIC_TYPE_FUNBE = 3
 headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36"}
 
 warnings.filterwarnings("ignore")
+BACK = False
 
-
-def override_where():
-    """ overrides certifi.core.where to return actual location of cacert.pem"""
-    # change this to match the location of cacert.pem
-    return os.path.abspath("cacert.pem")
-
-
-# is the program compiled?
+# if the program has been compiled
 if hasattr(sys, "frozen"):
     """
-        Checks if the code has been compiled
-        
         big thanks to https://stackoverflow.com/users/2682863/user2682863
         got code form: https://stackoverflow.com/questions/46119901/
     """
+    def override_where():
+        return os.path.abspath("cacert.pem")
+    
     import certifi.core
     
     os.environ["REQUESTS_CA_BUNDLE"] = override_where()
@@ -89,9 +74,9 @@ if hasattr(sys, "frozen"):
     requests.adapters.DEFAULT_CA_BUNDLE_PATH = override_where()
 
 
-def stitch_image(images_path, save_path):
+def stitch_image(location, title, ep_name):
     try:
-        images = natsorted(glob.glob(images_path + '/*.*'))  # get a list of images
+        images = natsorted(glob.glob(title + "/" + ep_name + '/*.*'))  # get a list of images
         
         XY_value_list = [[Image.open(file).size[0], Image.open(file).size[1]] for file in images]  # get the dimension of all the images
         height = int(sum([y for (x, y) in XY_value_list]))
@@ -110,8 +95,9 @@ def stitch_image(images_path, save_path):
             img_final.paste(Image.open(images[i]), (0, y_offset))  # paste image...
             y_offset += XY_value_list[i][1]  # and increase y offset!
         
-        img_final.save(save_path.split("/")[-1] + ".png", "PNG", quality=100)
-    
+        mkdir_smart(location + "/" + title)
+        img_final.save("%s/%s/%s.png" % (location, title, ep_name), "PNG", quality=100)
+
     except Exception as err:
         print("[ERROR] while stitching image:", err)
         print(traceback.format_exc())
@@ -163,6 +149,7 @@ def usage():
     """
     print()
     print("Help:")
+    print("download.exe: Downloads web comic from a source")
     print()
     print("options:")
     print("\t -h or --help")
@@ -171,6 +158,7 @@ def usage():
     print("\t -l or --location <output directory>")
     print("\t -s or --source <0:NAVER   1:NAVER_BEST_CHALLENGE   2:DAUM   3:FUNBE>  (only source 3 is available at the moment)")
     print("\t -r or --rss <rss> (will be utilized when daum comic is supported)")
+    print("\t -b or --back (back end mode)")
     print()
     print("How to use:")
     print("\t download.exe -u <link> -e <start>-<end> -s <source_index>")
@@ -215,7 +203,7 @@ def down_funbe(url, title, location):
     
     try:
         print("[INFO] Stitching image...")
-        stitch_image(title + "/" + ep_name, location + "/" + title + "/" + ep_name)
+        stitch_image(location, title, ep_name)
         shutil.rmtree(title, ignore_errors=True)
         
     except Exception:
@@ -527,7 +515,7 @@ def daum_main(rss, title, episode_start, episode_end, output_dir):
 
 source = -1
 url = None
-location = ""
+location = ".."
 episode_start = 1
 episode_end = 1
 
@@ -570,7 +558,7 @@ try:
                 print("[ERROR] Incorrect episode range")
                 print(traceback.format_exc())
                 usage()
-        
+
         elif option == "--rss" or option == "-r":
             rss = str(argument)
         
@@ -586,7 +574,11 @@ except getopt.GetoptError as err:
     print(traceback.format_exc())
     sys.exit(ERR_OPTION_NOT_RECOGNIZED)
 
-if source == COMIC_TYPE_NAVER:
+if source == -1:
+    print("Please pass source argument")
+    usage()
+
+elif source == COMIC_TYPE_NAVER:
     # naver_main(title_id, title, episode_start, episode_end, location, False)
     pass
 
@@ -609,6 +601,3 @@ else:
 
 print("[INFO] download complete")
 print()
-print("###############################################################")
-print("###############[ You may now close the program ]###############")
-input("###############################################################")

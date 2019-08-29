@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script returns information about a given comic
+more information cam be found at usage()
 
 how to make it an executable file:
 pyinstaller --onefile --icon=icon.ico parse_comic.py --hidden-import=queue
@@ -95,6 +95,7 @@ def usage():
     """
     print()
     print("Help:")
+    print("parse_comic.exe: Returns information about a given comic such as title, number of episodes, etc.")
     print()
     print("options:")
     print("\t -u or --url <comic_url>")
