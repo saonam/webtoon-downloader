@@ -108,7 +108,6 @@ if __name__ == "__main__":
     
     for option, argument in options:
         if option == "-t" or option == "--test":
-            print("lol")
             comic_query = "나 혼자만"
             source = COMIC_TYPE_FUNBE
         
