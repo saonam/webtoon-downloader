@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="bun_elipse.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
+    <value>14, 14</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>63</value>
@@ -137,14 +137,17 @@
         PgO/M5kAAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="bun_flat_btn_minimize.Iconimage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="btn_minimize.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAFlJREFUWEft
         zssKgDAMBdHg/3+zD9rZp9UIWcxZiaSXCaml6yfM57gvx3yO+/UHCeYMMMAAAwww4H3A83nOP9sO3g9j
         bAX3fQK+Ys6A/YBqzOe4L8e81EnEDRmG8ytA98s+AAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="bun_fat_btn_close.Iconimage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <metadata name="tool_tip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>927, 15</value>
+  </metadata>
+  <data name="btn_close.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAPxJREFUWEft
         lksKwkAQBXOEbNx4QvWoggjuRDzL2BVqFoEYYzIxLqagYdKf9xozok2lUvl7UkqHiJ2Pk2GGWR/nEQKn
@@ -152,6 +155,44 @@
         NgflzTMIawDdEsb65hkMNIKnAeubZzCKuOIqnH9jDmHGx/7AWTh//IoWAaOI/M4vBvQu5ipgoBF079zo
         XUzby4KwBtC7cJzNQfklEFQYBm87OWtQbgmEFIRB8ww1e2D5EggoBKPmGXrshWVLxPC2P8cQAtv9IalU
         KuvTNC9X5RwHet/WhgAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="btn_show_err.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAe9JREFUWEft
+        lk9LVFEchsdiNEghQTd+g/58DsWFGGgUuJdMDIO+gi504VfIheCiPoKKhJsoF1poorkNBRcVRCUen/fe
+        d4YJZ5hz5+qIMA88OOd3z/s76px77i20uLGEEDpwDN/hAZ5YfX6Lutbh6ZcLjUfxEOvxDUccyw/N2nBW
+        nc02TuND7LGP8BV+xhILeNttGocmM0m7EP7iJNZsqms45bli3pcagwbDeIZ/sN/lumiuM8oOuZwNgu24
+        j2Lc5WjITKTRsIdFl+Mh9CyJh7CFt1yOhoy+ji9qAE9cjofQcpoNL11KYLyGKx6WqVZnrI0pllyKh5D+
+        deK+SwmM3+O6h2Wq1Rnr7hA7LsVD6GeaDZ0uZYZsV9oi/HApHkK/0my461JmyOb6BWp9BUXUDv+IR/YT
+        vsb/jmHGOqzErkvxEKq1CTfSclU2PC2Bca5NWLoNdbyWTz8+a7frrx/EbjuCm7jqaZqX+zasPIimXY6G
+        zIs02uBBJAg+TlqEcIoDLteFufmPYkG4F49R/MOsD6M5X8oO4T78mrQJ4bt/Cj2Otbke4B2r3X55j2OC
+        lYt/wHvYnBcSwhcW9yVd0yuZ7o5F1A7/bfX5DT7Fxl/JCNdc/MphsdbiormLCxYsnVh68+l1ubmw8PNr
+        W7xF8ykUzgG7q4qNaRMEkAAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="btn_save_location.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAKlJREFUWEft
+        jlEKwkAMRPcIBdsfvf9l/JBSEPQ0MZt9ChVhU3c/quRB2GY6EyYFwS6RPlx0DpzcRsl3YdYZOeunZEVY
+        DaSVlkF+6ayZM+9N58hvHyXXXGDQeZa465yw1CkZX4F3sJlPn0lnMUHkagYPBJoLZPQzlzCQ6uD/WMAL
+        MQPpxwu0wLko8H0B1s0Q/6MCrFWwR4EoEAXaC/SG83Xwd4fzQbAnUnoA2mwQUIdm2VAAAAAASUVORK5C
+        YII=
+</value>
+  </data>
+  <data name="btn_view.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAj5JREFUWEft
+        lr2PTFEchmcR21hBUBA6a+0fQEJle4uIhoTSEokEhSioJRqFhlZ2rWr/CAnxrRJRsj4SkfjoiON557yH
+        mblz5p6Vu908yZPJ/M57fvfsPXfO3daQIUslhDCKF/EFfrHP8QKudmx54AJb8RnmeIJbHG8WGusvf6mr
+        wGs8hBvtYXyDQgsc9bTmoOnZdvsQXuE6l/9CbT1qYeKcy81B00exdzjoUgXGdCfEQ5eag6bfY+8w5lIF
+        xtbGSPjqUnPQ9EfsHda4VIGxtIBvLjUHTZd3C5g0jul3LT+jflZ38BLeQFHyEN7EyziLT1G9Onvv8LR/
+        UBzBTziI3/58j0dwDHXbj+JHFCmTQ7kRX7YbBu61IyGcx824B4/jdXyAv7COn3gfr+Ex3I3qpZNSzPty
+        VRg8EzNh1qUuqG9CnQcfFOphEU/hBse7oD6nEJx2qQqDkzETFl3qC+MrUFuQ0KnY/7YaxrVtYtKlKgx2
+        PgfjLmdxLvhrFiI7Y3LA/icI1N8q41zJAtLWzrmUh9BMzIa7LmVxrmQB8zEZZlzKQ2giZttbUbevbfy1
+        Lwx3buuEy4MhqCda7HKpL87ULaDowe6CcNFz4EzdAsr3P0G46Dlwpm4B5fufIJxum041nd3akse4gFdw
+        P67ExCqcwquojN4hmqO56iHyv/9eCJe8F975U6RnJkf9778XJuhFozec3I778CTexs6LJ97iLTyBe3Eb
+        pvnZf2L+CxrqKJ5GvRN0xB5QzcNDhiyBVusP0cxElyWv8qsAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -442,12 +483,15 @@
 </value>
   </data>
   <metadata name="bun_drag_control_main.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>143, 17</value>
+    <value>126, 14</value>
   </metadata>
-  <metadata name="open_file_dialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>358, 17</value>
+  <metadata name="open_file_dialog_open.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>327, 14</value>
   </metadata>
   <metadata name="bun_drag_control_sub.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>528, 17</value>
+    <value>525, 14</value>
+  </metadata>
+  <metadata name="folder_browser_dialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>717, 15</value>
   </metadata>
 </root>

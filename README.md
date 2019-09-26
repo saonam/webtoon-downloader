@@ -1,10 +1,12 @@
-># Click [here](#kor) for Korean Documentation<br>한국분들은 버전은 [여기](#kor)를 클릭하세요
+># Read Documentation in [Korean](#kor)<br>[한국어](#kor)로 도큐멘테이션 읽기
 
 # Comic Downloader
 
 > ## [Download Page](https://github.com/AnonymousPomp/Comic-Downloader/releases/)
 
 This is a C# and python project that downloads web comic using C# and python.
+
+The program is still in alpha version (in development), so the program may not be working properly.
 
 # Warning
 >**I have no responsibility over what you do with my program**
@@ -22,10 +24,12 @@ This is a C# and python project that downloads web comic using C# and python.
 # How to use
 By clicking the planet icon, ...
 
+downloading takes from 20 second up to 100 second or more depending on your internet connection and the length of the comic.
+
 # For Developers
 >All information from this point on are for developers who want to build upon my program. Ordinary users don't necessarily have to read it.
 
->I assume you have the following knowledge:
+>This documentation assumes taht you have the following knowledge:
 >- Intermediate knowledge about python
 >- Basic knowledge about C#
 >- Basic knowledge about command prompt (cmd)
@@ -36,13 +40,14 @@ By clicking the planet icon, ...
 >You are allowed to distribute, remix, tweak, and build up on the project, even commercially, as long as you put a credit for the original creation.
 You can find more information [Here](https://en.wikipedia.org/wiki/Creative_Commons_license#Types_of_licenses)
 
+> PhantomJS available at: https://phantomjs.org/download.html
 
 Development Environment:
-- Python 3.6.5 with Pycharm
-- .NET Framework 4.7.2 with Visual Studio 2019
+- Python 3.6.9 with Pycharm
 
 Test environment:
-- Windows 10 version 1809, 1903
+- Windows 10 (Virtual Box)
+- Linux (Ubuntu 18.04)
 
 Converting python source code to an executable .exe file: command is commented at top of each python files.
 
@@ -64,6 +69,8 @@ If you want to test the code after editing the source code, pass "-t" or "--test
 
 이 프로젝트는 C#과 파이썬을 이용해 웹툰을 다운받는 프로그램입니다.
 
+프로그램은 아직 알파 버전(개발중)에 있음으로 일부 기능이 오작동 할 수 있음을 알려드립니다.
+
 # 주의
 >**여러분이 제 프로그램으로 무엇을 하든지 저에게는 책임이 없음을 밝힙니다**
 
@@ -80,6 +87,8 @@ If you want to test the code after editing the source code, pass "-t" or "--test
 # 사용법
 행성 모양의 아이콘을 클릭하시면 ... <추가될 예정>
 
+인터넷 속도와 웹툰의 길이에 따라 다운로드 시간은 20초에서 100초정도 걸립니다.
+
 # 개발자들을 위해서
 >여기서부터 나오는 모든 내용은 저의 프로그램을 사용하고 싶은 개발자들을 위한 내용들입니다. 일반 사용자들은 읽지 않으셔도 상관 없습니다.
 
@@ -94,10 +103,10 @@ If you want to test the code after editing the source code, pass "-t" or "--test
 
 개발 환경:
 - Python 3.6.5 with Pycharm
-- .NET Framework 4.7.2 with Visual Studio 2019
 
 테스트 환경:
-- Windows 10 버전 1809, 1903
+- Windows 10 (Virtual Box)
+- 리눅스 (우분투 18.04)
 
 파이썬 코드를 exe 파일로 변환하기: 각 코드 안에 커맨드가 포함되어 있습니다.
 

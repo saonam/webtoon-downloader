@@ -1,17 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Data;
-using System.Text;
-using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ComicDownloader
 {

@@ -1,14 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Regex;
-using System.Threading;
-using System.Drawing;
 using System.Diagnostics;
 using System.Windows.Forms;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -18,6 +10,7 @@ namespace ComicDownloader.supporting
     {
         string ComicURL;
         List<string> URLList;
+        form_main main_form;
 
         public int from = -1;
         public int to = -1;
@@ -25,24 +18,29 @@ namespace ComicDownloader.supporting
         public bool aAllowed = false;
         public bool bAllowed = false;
 
-        int exitCode;
-
-        public form_comic_range_input(string ParentComicURL, List<string> ParentURLList)
+        public form_comic_range_input(string ParentComicURL, List<string> ParentURLList, form_main Parentmain_form)
         {
             InitializeComponent();
             ComicURL = ParentComicURL;
             URLList = ParentURLList;
+            main_form = Parentmain_form;
             RangeUpdate(this, new EventArgs());
-            folder_browser_dialog.SelectedPath = System.Environment.CurrentDirectory;
-            textbox_where.Text = System.Environment.CurrentDirectory;
         }
 
         private void RangeUpdate(object sender, EventArgs e)
         {
-            if (textbox_from.Text == "START")
+            if (textbox_from.Text == "START" || textbox_from.Text == "END")
             {
-                from = 1;
-                aAllowed = true;
+                if (textbox_from.Text == "START")
+                {
+                    from = 1;
+                    aAllowed = true;
+                }
+                else
+                {
+                    from = URLList.Count;
+                    aAllowed = true;
+                }
             }
             else
             {
@@ -50,10 +48,19 @@ namespace ComicDownloader.supporting
                 else aAllowed = false;
             }
 
-            if (textbox_to.Text == "END")
+            if (textbox_to.Text == "START" || textbox_to.Text == "END")
             {
-                to = URLList.Count;
-                bAllowed = true;
+                if (textbox_to.Text == "START")
+                {
+                    to = 1;
+                    bAllowed = true;
+                    
+                }
+                else
+                {
+                    to = URLList.Count;
+                    bAllowed = true;
+                }
             }
             else
             {
@@ -74,7 +81,7 @@ namespace ComicDownloader.supporting
                     bAllowed = false;
                 }
             }
-
+            
             if (aAllowed)
             {
                 lab_init_range.Text = "";
@@ -98,12 +105,17 @@ namespace ComicDownloader.supporting
             lab_range.Text = "[" + from + " ~ " + to + "]";
         }
 
-        public void DownloadLoop()
+        public void Download()
         {
+            if (main_form.folder_browser_dialog.SelectedPath.EndsWith(@"\"))
+            {
+                main_form.folder_browser_dialog.SelectedPath = main_form.folder_browser_dialog.SelectedPath.Remove(main_form.folder_browser_dialog.SelectedPath.Length - 1);
+            }
+
             #region Run search command
             ProcessStartInfo episodeDownloadProcessStartInfo = new ProcessStartInfo();
             episodeDownloadProcessStartInfo.WorkingDirectory = @"support_files\";
-            episodeDownloadProcessStartInfo.Arguments = "-u " + ComicURL + " -e " + (from-1).ToString() + "-" + (to-1).ToString() + @" -s 3";
+            episodeDownloadProcessStartInfo.Arguments = string.Format(@"-u {0} -s {1} -l ""{2}""", ComicURL, main_form.source, main_form.folder_browser_dialog.SelectedPath);
             episodeDownloadProcessStartInfo.CreateNoWindow = false;
             episodeDownloadProcessStartInfo.UseShellExecute = false;
             episodeDownloadProcessStartInfo.FileName = @"support_files\download.exe";
@@ -117,7 +129,7 @@ namespace ComicDownloader.supporting
             #endregion
 
             #region Check for errors
-            //error
+            //error handling
             #endregion
 
             this.Close();
@@ -130,25 +142,15 @@ namespace ComicDownloader.supporting
 
         private void Bun_flat_btn_go_Click(object sender, EventArgs e)
         {
-            Task.Factory.StartNew(() => DownloadLoop());
-            MessageBox.Show("Start downloading...\nYou may close the GUI");
-            this.Visible = false;
-        }
-
-        private void Bun_flat_btn_choose_Click(object sender, EventArgs e)
-        {
-            Thread threadGetFile = new Thread(new ThreadStart(() =>
+            if (aAllowed && bAllowed)
             {
-                if (folder_browser_dialog.ShowDialog() == DialogResult.Cancel)
-                {
-                    return;
-                }
-
-                Invoke((Action)(() => { textbox_where.Text = folder_browser_dialog.SelectedPath; }));
-            }));
-
-            threadGetFile.SetApartmentState(ApartmentState.STA);
-            threadGetFile.Start();
+                Task.Factory.StartNew(() => Download());
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Invalid range");
+            }
         }
     }
 }

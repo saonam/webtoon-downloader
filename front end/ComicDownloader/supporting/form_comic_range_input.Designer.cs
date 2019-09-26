@@ -39,9 +39,6 @@
             this.lab_wave_mark = new System.Windows.Forms.Label();
             this.textbox_to = new System.Windows.Forms.TextBox();
             this.textbox_from = new System.Windows.Forms.TextBox();
-            this.bun_flat_btn_choose = new Bunifu.Framework.UI.BunifuFlatButton();
-            this.textbox_where = new System.Windows.Forms.TextBox();
-            this.folder_browser_dialog = new System.Windows.Forms.FolderBrowserDialog();
             this.SuspendLayout();
             // 
             // bun_flat_btn_go
@@ -169,57 +166,10 @@
             this.textbox_from.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textbox_from.TextChanged += new System.EventHandler(this.RangeUpdate);
             // 
-            // bun_flat_btn_choose
-            // 
-            this.bun_flat_btn_choose.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
-            this.bun_flat_btn_choose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
-            this.bun_flat_btn_choose.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bun_flat_btn_choose.BackgroundImage")));
-            this.bun_flat_btn_choose.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.bun_flat_btn_choose.BorderRadius = 0;
-            this.bun_flat_btn_choose.ButtonText = "";
-            this.bun_flat_btn_choose.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.bun_flat_btn_choose.DisabledColor = System.Drawing.Color.Gray;
-            this.bun_flat_btn_choose.Iconcolor = System.Drawing.Color.Transparent;
-            this.bun_flat_btn_choose.Iconimage = null;
-            this.bun_flat_btn_choose.Iconimage_right = null;
-            this.bun_flat_btn_choose.Iconimage_right_Selected = null;
-            this.bun_flat_btn_choose.Iconimage_Selected = null;
-            this.bun_flat_btn_choose.IconMarginLeft = 0;
-            this.bun_flat_btn_choose.IconMarginRight = 0;
-            this.bun_flat_btn_choose.IconRightVisible = true;
-            this.bun_flat_btn_choose.IconRightZoom = 0D;
-            this.bun_flat_btn_choose.IconVisible = true;
-            this.bun_flat_btn_choose.IconZoom = 90D;
-            this.bun_flat_btn_choose.IsTab = false;
-            this.bun_flat_btn_choose.Location = new System.Drawing.Point(365, 50);
-            this.bun_flat_btn_choose.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.bun_flat_btn_choose.Name = "bun_flat_btn_choose";
-            this.bun_flat_btn_choose.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
-            this.bun_flat_btn_choose.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
-            this.bun_flat_btn_choose.OnHoverTextColor = System.Drawing.Color.White;
-            this.bun_flat_btn_choose.selected = false;
-            this.bun_flat_btn_choose.Size = new System.Drawing.Size(35, 35);
-            this.bun_flat_btn_choose.TabIndex = 22;
-            this.bun_flat_btn_choose.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.bun_flat_btn_choose.Textcolor = System.Drawing.Color.White;
-            this.bun_flat_btn_choose.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bun_flat_btn_choose.Visible = false;
-            this.bun_flat_btn_choose.Click += new System.EventHandler(this.Bun_flat_btn_choose_Click);
-            // 
-            // textbox_where
-            // 
-            this.textbox_where.Location = new System.Drawing.Point(7, 57);
-            this.textbox_where.Name = "textbox_where";
-            this.textbox_where.Size = new System.Drawing.Size(350, 25);
-            this.textbox_where.TabIndex = 23;
-            this.textbox_where.Visible = false;
-            // 
             // form_comic_range_input
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.ClientSize = new System.Drawing.Size(412, 408);
-            this.Controls.Add(this.textbox_where);
-            this.Controls.Add(this.bun_flat_btn_choose);
             this.Controls.Add(this.bun_flat_btn_go);
             this.Controls.Add(this.lab_range);
             this.Controls.Add(this.lab_end_range);
@@ -237,7 +187,6 @@
             this.Text = "Range Input";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion
@@ -252,8 +201,5 @@
         private System.Windows.Forms.Label lab_wave_mark;
         private System.Windows.Forms.TextBox textbox_to;
         private System.Windows.Forms.TextBox textbox_from;
-        private Bunifu.Framework.UI.BunifuFlatButton bun_flat_btn_choose;
-        private System.Windows.Forms.TextBox textbox_where;
-        public System.Windows.Forms.FolderBrowserDialog folder_browser_dialog;
     }
 }

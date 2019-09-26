@@ -127,14 +127,4 @@
         AABJRU5ErkJggg==
 </value>
   </data>
-  <data name="bun_flat_btn_choose.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAAFpJREFUWEft
-        0DEOgEAIRFHOZ7x/pzEbPQfOKlK4hQ2d/yXTwNBgAADgzd1nZVUWZYrxoLqXVGrKY4vxQLvSXlJpv7uX
-        FuOBdqW9pFJ/2aH0w6/XlvUAAPgrsxP0irQNl+Ye5gAAAABJRU5ErkJggg==
-</value>
-  </data>
-  <metadata name="folder_browser_dialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
 </root>
