@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ComicDownloaderWindow</class>
+ <widget class="QMainWindow" name="ComicDownloaderWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>504</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">Comic Downlaoder v4-alpha</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>Images/icons8_Pluto_Dwarf_Planet_3.ico</normaloff>Images/icons8_Pluto_Dwarf_Planet_3.ico</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tab_widget_main">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>800</width>
+      <height>490</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tab_search">
+     <attribute name="title">
+      <string>Search</string>
+     </attribute>
+     <widget class="QScrollArea" name="scroll_area_results">
+      <property name="geometry">
+       <rect>
+        <x>-1</x>
+        <y>60</y>
+        <width>801</width>
+        <height>390</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scroll_area_widget_contents_search">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>799</width>
+         <height>388</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QTextEdit" name="text_edit_search">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>0</y>
+        <width>600</width>
+        <height>30</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="combo_box_source">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>150</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <item>
+       <property name="text">
+        <string>funbe</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_error">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>30</y>
+        <width>651</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_push_search">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>0</y>
+        <width>50</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>Images/icons8-search-24.png</normaloff>Images/icons8-search-24.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>24</width>
+        <height>24</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_downloads">
+     <attribute name="title">
+      <string>Downloads</string>
+     </attribute>
+     <widget class="QScrollArea" name="scroll_area_downloads">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>800</width>
+        <height>460</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::VLine</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scroll_area_widget_contents_downloads">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>798</width>
+         <height>458</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_tools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="action_log"/>
+    <addaction name="action_about"/>
+   </widget>
+   <addaction name="menu_tools"/>
+  </widget>
+  <action name="action_about">
+   <property name="text">
+    <string>About</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="action_log">
+   <property name="text">
+    <string>Show Log</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
