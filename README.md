@@ -1,4 +1,4 @@
-># Read Documentation in [Korean](#kor)<br>[한국어](#kor)로 도큐멘테이션 읽기
+># Read Documentation in [Korean](#웹툰-다운로더)<br>[한국어](#웹툰-다운로더)로 도큐멘테이션 읽기
 
 # Comic Downloader
 
@@ -64,7 +64,7 @@ If you want to test the code after editing the source code, pass "-t" or "--test
 <br>
 <br>
 
-# [웹툰 다운로더](#kor)
+# [웹툰 다운로더](#웹툰-다운로더)
 > ## [다운로드 페이지](https://github.com/AnonymousPomp/Comic-Downloader/releases/)
 
 이 프로젝트는 C#과 파이썬을 이용해 웹툰을 다운받는 프로그램입니다.
