@@ -18,7 +18,7 @@ class Ui_ComicDownloaderWindow(object):
         self.width, self.height = 800, 500
         self.y_pos = int((screen_height - self.height) / 2)
         self.x_pos = int((screen_width - self.width) / 2)
-
+        
         ComicDownloaderWindow.setObjectName("ComicDownloaderWindow")
         ComicDownloaderWindow.setFixedSize(self.width, self.height)
         ComicDownloaderWindow.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
@@ -48,9 +48,10 @@ class Ui_ComicDownloaderWindow(object):
         self.scroll_area_widget_contents_search.setGeometry(QtCore.QRect(0, 0, 799, 388))
         self.scroll_area_widget_contents_search.setObjectName("scroll_area_widget_contents_search")
         self.scroll_area_results.setWidget(self.scroll_area_widget_contents_search)
-        self.text_edit_search = QtWidgets.QTextEdit(self.tab_search)
+        self.text_edit_search = SearchBox(self.tab_search)
         self.text_edit_search.setGeometry(QtCore.QRect(150, 0, 600, 30))
         self.text_edit_search.setObjectName("text_edit_search")
+        
         self.combo_box_source = QtWidgets.QComboBox(self.tab_search)
         self.combo_box_source.setGeometry(QtCore.QRect(0, 0, 150, 30))
         self.combo_box_source.setLayoutDirection(QtCore.Qt.LeftToRight)
@@ -109,46 +110,48 @@ class Ui_ComicDownloaderWindow(object):
         self.retranslateUi(ComicDownloaderWindow)
         self.tab_widget_main.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(ComicDownloaderWindow)
-
+        
         self.btn_push_search.clicked.connect(self.btn_push_search_click)
-        self.action_about.triggered.connect(lambda: print("lol"))
-
+        self.action_log.triggered.connect(lambda: print("show log"))
+        self.action_about.triggered.connect(self.about_click)
+        
         for i in range(1):
             label = QtWidgets.QLabel("asdf\n"*100, self.scroll_area_results)
-
+            
             self.scroll_area_results.setWidget(label)
-
+            
     def retranslateUi(self, ComicDownloaderWindow):
         _translate = QtCore.QCoreApplication.translate
-        self.combo_box_source.setItemText(0, _translate("ComicDownloaderWindow", "funbe"))
+        self.combo_box_source.setItemText(0, _translate("ComicDownloaderWindow", "Funbe"))
+        
         self.tab_widget_main.setTabText(self.tab_widget_main.indexOf(self.tab_search), _translate("ComicDownloaderWindow", "Search"))
         self.tab_widget_main.setTabText(self.tab_widget_main.indexOf(self.tab_downloads), _translate("ComicDownloaderWindow", "Downloads"))
         self.menu_tools.setTitle(_translate("ComicDownloaderWindow", "Tools"))
         self.action_about.setText(_translate("ComicDownloaderWindow", "About"))
         self.action_log.setText(_translate("ComicDownloaderWindow", "Show Log"))
+    
+    def btn_push_search_click(self):
+        print(self.text_edit_search.toPlainText())
 
     @staticmethod
-    def btn_push_search_click():
-        print("downloading...")
+    def about_click():
+        info = QtWidgets.QMessageBox()
+        info.setWindowTitle("Info")
+        info.setIcon(QtWidgets.QMessageBox.Information)
+        info.setText('''
+Made by: Anonymous Pomp (anonymouspomp@gmail.com)
+https://github.com/AnonymousPomp/Comic-Downloader/
+''')
+        info.exec_()
 
 
-class TextArea(QtWidgets.QTextEdit):
+class SearchBox(QtWidgets.QTextEdit):
     def __init__(self, parent):
-        super().__init__(parent=parent)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        self.show()
-
-    def SLOT_SendMsg(self):
-        return lambda: self.get_and_send()
-
-    def get_and_send(self):
-        text = self.toPlainText()
-        self.clear()
-        print(text)
+        super().__init__(parent)
 
     def keyPressEvent(self, qKeyEvent):
         if qKeyEvent.key() == QtCore.Qt.Key_Return:
-            print('Enter pressed')
+            ui.btn_push_search_click()
         else:
             super().keyPressEvent(qKeyEvent)
 
@@ -158,7 +161,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     screen_resolution = app.desktop().screenGeometry()
     screen_width, screen_height = screen_resolution.width(), screen_resolution.height()
-
+    
     ComicDownloaderWindow = QtWidgets.QMainWindow()
     ui = Ui_ComicDownloaderWindow()
     ui.setupUi(ComicDownloaderWindow)
