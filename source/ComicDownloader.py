@@ -6,51 +6,55 @@ Created by: PyQt5 UI code generator 5.13.1
 Edited by: Anonymous Pomp (anonymouspomp@gmail.com)
 
 Commands:
-    implement UI: pyuic5 -x ComicDownloader.ui -o ComicDownloader.py
     compile: pyinstaller --onefile --icon=./Images/icons8-pluto-dwarf-planet-48.png ComicDownloader.py
 """
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class UiComicDownloaderWindow(object):
+class UiComicDownloaderWindow(QtWidgets.QMainWindow):
     def __init__(self):
+        super(UiComicDownloaderWindow, self).__init__()
         self.msg_error = ""
         self.width, self.height = 800, 500
         self.y_pos = int((screen_height - self.height) / 2)
         self.x_pos = int((screen_width - self.width) / 2)
         
-        global ComicDownloaderWindow
-        self.ComicDownloaderWindow = ComicDownloaderWindow
-        self.ComicDownloaderWindow.setObjectName("ComicDownloaderWindow")
-        self.ComicDownloaderWindow.setFixedSize(self.width, self.height)
-        self.ComicDownloaderWindow.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
+        self.setObjectName("ComicDownloaderWindow")
+        self.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
+        self.setFixedSize(self.width, self.height)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.ComicDownloaderWindow.sizePolicy().hasHeightForWidth())
-        self.ComicDownloaderWindow.setSizePolicy(sizePolicy)
-        self.ComicDownloaderWindow.setWindowTitle("Comic Downloader v4-alpha")
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.setWindowTitle("Comic Downloader v4-alpha")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("Images/icons8-pluto-dwarf-planet-48.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.ComicDownloaderWindow.setWindowIcon(icon)
-        self.ComicDownloaderWindow.setStyleSheet("")
-        self.centralWidget = QtWidgets.QWidget(self.ComicDownloaderWindow)
+        self.setWindowIcon(icon)
+        self.centralWidget = QtWidgets.QWidget(self)
         self.centralWidget.setObjectName("centralWidget")
         self.tab_widget_main = QtWidgets.QTabWidget(self.centralWidget)
         self.tab_widget_main.setGeometry(QtCore.QRect(0, 0, 800, 490))
         self.tab_widget_main.setObjectName("tab_widget_main")
         self.tab_search = QtWidgets.QWidget()
         self.tab_search.setObjectName("tab_search")
+        #
+        # Scroll Area
+        #
         self.scroll_area_results = QtWidgets.QScrollArea(self.tab_search)
         self.scroll_area_results.setGeometry(QtCore.QRect(-1, 60, 801, 390))
-        self.scroll_area_results.setStyleSheet("")
         self.scroll_area_results.setWidgetResizable(True)
+        
+        self.widget_results_scroll = QtWidgets.QWidget()
+        self.widget_results_scroll.setGeometry(QtCore.QRect(0, 0, 799, 388))
+        self.widget_results_scroll.setObjectName("widget_results_scroll")
+        self.scroll_area_results.setWidget(self.widget_results_scroll)
+        self.v_box_layout_results = QtWidgets.QVBoxLayout(self.widget_results_scroll)
+        self.scroll_area_results_all = QtWidgets.QVBoxLayout(self)
+        self.scroll_area_results_all.addWidget(self.scroll_area_results)
         self.scroll_area_results.setObjectName("scroll_area_results")
-        self.scroll_area_widget_contents_search = QtWidgets.QWidget()
-        self.scroll_area_widget_contents_search.setGeometry(QtCore.QRect(0, 0, 799, 388))
-        self.scroll_area_widget_contents_search.setObjectName("scroll_area_widget_contents_search")
-        self.scroll_area_results.setWidget(self.scroll_area_widget_contents_search)
+        
         self.text_edit_search = SearchBox(self.tab_search)
         self.text_edit_search.setGeometry(QtCore.QRect(150, 0, 600, 30))
         self.text_edit_search.setObjectName("text_edit_search")
@@ -93,18 +97,17 @@ class UiComicDownloaderWindow(object):
         self.scroll_area_widget_contents_downloads.setObjectName("scroll_area_widget_contents_downloads")
         self.scroll_area_downloads.setWidget(self.scroll_area_widget_contents_downloads)
         self.tab_widget_main.addTab(self.tab_downloads, "")
-        self.ComicDownloaderWindow.setCentralWidget(self.centralWidget)
-        self.menubar = QtWidgets.QMenuBar(self.ComicDownloaderWindow)
+        self.setCentralWidget(self.centralWidget)
+        self.menubar = QtWidgets.QMenuBar(self)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
         self.menubar.setObjectName("menubar")
         self.menu_tools = QtWidgets.QMenu(self.menubar)
         self.menu_tools.setObjectName("menu_tools")
-        self.ComicDownloaderWindow.setMenuBar(self.menubar)
-        self.action_about = QtWidgets.QAction(self.ComicDownloaderWindow)
-        self.action_about.setShortcut("")
+        self.setMenuBar(self.menubar)
+        self.action_about = QtWidgets.QAction(self)
         self.action_about.setShortcutContext(QtCore.Qt.WindowShortcut)
         self.action_about.setObjectName("action_about")
-        self.action_log = QtWidgets.QAction(self.ComicDownloaderWindow)
+        self.action_log = QtWidgets.QAction(self)
         self.action_log.setObjectName("action_log")
         self.menu_tools.addAction(self.action_log)
         self.menu_tools.addAction(self.action_about)
@@ -112,15 +115,11 @@ class UiComicDownloaderWindow(object):
 
         self.retranslateUi()
         self.tab_widget_main.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(self.ComicDownloaderWindow)
+        QtCore.QMetaObject.connectSlotsByName(self)
         
         self.btn_push_search.clicked.connect(self.btn_push_search_click)
         self.action_log.triggered.connect(self.log_click)
         self.action_about.triggered.connect(self.about_click)
-
-        for i in range(100):
-            label = QtWidgets.QLabel("lol\n", self.scroll_area_results)
-            self.scroll_area_results.setWidget(label)
         
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -135,6 +134,18 @@ class UiComicDownloaderWindow(object):
     def btn_push_search_click(self):
         print(self.text_edit_search.toPlainText())
 
+        for i in range(15):
+            self.v_box_layout_results.addWidget(self.createLayout_group())
+
+    def createLayout_group(self):
+        sgroupbox = QtWidgets.QGroupBox(self)
+        
+        layout_groupbox = QtWidgets.QVBoxLayout(sgroupbox)
+        for i in element_list:
+            item = QtWidgets.QLabel(i, sgroupbox)
+            layout_groupbox.addWidget(item)
+        return sgroupbox
+    
     def about_click(self):
         info = QtWidgets.QMessageBox()
         info.setWindowTitle("Info")
@@ -156,19 +167,20 @@ class SearchBox(QtWidgets.QTextEdit):
 
     def keyPressEvent(self, qKeyEvent):
         if qKeyEvent.key() == QtCore.Qt.Key_Return:
-            ui.btn_push_search_click()
+            ComicDownloader.btn_push_search_click()
         else:
             super().keyPressEvent(qKeyEvent)
 
 
 if __name__ == "__main__":
     import sys
+    element_list = ["Title", "Thumbnail", "Author"]
+    
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("Fusion")
     screen_resolution = app.desktop().screenGeometry()
     screen_width, screen_height = screen_resolution.width(), screen_resolution.height()
     
-    ComicDownloaderWindow = QtWidgets.QMainWindow()
-    ui = UiComicDownloaderWindow()
-    ComicDownloaderWindow.show()
+    ComicDownloader = UiComicDownloaderWindow()
+    ComicDownloader.show()
     sys.exit(app.exec_())
