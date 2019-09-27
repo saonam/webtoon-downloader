@@ -1,10 +1,64 @@
 # -*- coding: utf-8 -*-
 """
-how to compile:
-    pyinstaller --onefile --icon=./Images/icons8-pluto-dwarf-planet-48.png ComicDownloader.py
+more information cam be found at usage()
+
+how to make it an executable file:
+    pyinstaller --onefile --windowed --icon=./Images/icons8-pluto-dwarf-planet-48.png ComicDownloader.py --hidden-import=queue
 """
 
+print("[INFO] Initializing...")
+import time
+time_start = time.time()
+
+from urllib.parse import urlparse, quote, unquote
 from PyQt5 import QtCore, QtGui, QtWidgets
+from urllib.parse import quote, urlparse
+from selenium import webdriver
+from natsort import natsorted
+from bs4 import BeautifulSoup
+from PIL import Image
+import subprocess
+import threading
+import traceback
+import requests
+import warnings
+import socket
+import shutil
+import getopt
+import glob
+import json
+import sys
+import os
+import re
+
+RETURN_ZERO = 0
+ERR_NO_SEARCH_RESULT = -1
+ERR_SOURCE_NOT_RECOGNIZED = -2
+ERR_OPTION_NOT_RECOGNIZED = -3
+ERR_TOO_MANY_SPACE_IN_QUERY = -4
+ERR_NO_QUERY_GIVEN = -5
+ERR_WHILE_REQUITING_DATA = -6
+ERR_NO_EPISODE_IN_COMIC = -7
+ERR_NO_ARGUMENT_PASSED = -8
+ERR_NOT_CONNECTED_TO_INTERNET = -9
+ERR_FEATURE_NOT_READY = -10
+ERR_INVALID_URL = -1
+ERR_CANNOT_CONNECT_TO_SERVER = -4
+ERR_UNDEFINED = -5
+ERR_RSS = -7
+ERR_COOKIE = -8
+ERR_DOWNLOAD = -9
+ERR_NO_EPISODE = -10
+ERR_NO_IMAGES = -11
+ERR_WHILE_STITCHING_IMAGES = -12
+ERR_SOURCE_IS_NOT_A_NUMBER = -14
+ERR_SOURCE_NOT_GIVEN = -15
+
+COMIC_TYPE_NAVER = 0
+COMIC_TYPE_NAVER_BEST_CHALLENGE = 1
+COMIC_TYPE_DAUM = 2
+COMIC_TYPE_FUNBE = 3
+COMIC_TYPE_KAKAO = 4
 
 
 class UiComicDownloaderWindow(QtWidgets.QMainWindow):
@@ -58,10 +112,8 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.combo_box_source.setGeometry(QtCore.QRect(0, 0, 150, 30))
         self.combo_box_source.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.combo_box_source.setObjectName("combo_box_source")
-        self.combo_box_source.addItem("")
         self.label_error = QtWidgets.QLabel(self.tab_search)
         self.label_error.setGeometry(QtCore.QRect(150, 30, 651, 30))
-        self.label_error.setText("")
         self.label_error.setObjectName("label_error")
         self.btn_push_search = QtWidgets.QPushButton(self.tab_search)
         self.btn_push_search.setGeometry(QtCore.QRect(750, 0, 50, 30))
@@ -107,7 +159,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.menu_tools.addAction(self.action_log)
         self.menu_tools.addAction(self.action_about)
         self.menubar.addAction(self.menu_tools.menuAction())
-
+        
         self.retranslateUi()
         self.tab_widget_main.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
@@ -118,20 +170,23 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.combo_box_source.setItemText(0, _translate("ComicDownloaderWindow", "Funbe"))
-        
+        self.combo_box_source.addItem("Funbe")
+        self.combo_box_source.addItem("Naver")
+        self.combo_box_source.addItem("Daum")
+        self.combo_box_source.addItem("Kakao")
+
         self.tab_widget_main.setTabText(self.tab_widget_main.indexOf(self.tab_search), _translate("ComicDownloaderWindow", "Search"))
         self.tab_widget_main.setTabText(self.tab_widget_main.indexOf(self.tab_downloads), _translate("ComicDownloaderWindow", "Downloads"))
         self.menu_tools.setTitle(_translate("ComicDownloaderWindow", "Tools"))
         self.action_about.setText(_translate("ComicDownloaderWindow", "About"))
         self.action_log.setText(_translate("ComicDownloaderWindow", "Show Log"))
-    
+        
     def btn_push_search_click(self):
         print(self.text_edit_search.toPlainText())
-
+        print(self.combo_box_source.currentIndex())
         for i in range(15):
             self.v_box_layout_results.addWidget(self.createLayout_group())
-
+        
     def createLayout_group(self):
         sgroupbox = QtWidgets.QGroupBox(self)
         
@@ -140,7 +195,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
             item = QtWidgets.QLabel(i, sgroupbox)
             layout_groupbox.addWidget(item)
         return sgroupbox
-    
+        
     def about_click(self):
         text = "<center>" \
                "<h1>Comic Downloader</h1>" \
@@ -154,7 +209,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
                "https://github.com/AnonymousPomp/Comic-Downloader<br>" \
         
         QtWidgets.QMessageBox.about(self, "About", text)
-
+        
     def log_click(self):
         info = QtWidgets.QMessageBox()
         info.setWindowTitle("Log")

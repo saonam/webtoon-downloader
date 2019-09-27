@@ -1,37 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-more information cam be found at usage()
-
-how to make it an executable file:
-pyinstaller --onefile --icon=icon.ico search.py --hidden-import=queue
-"""
-
-from urllib.parse import urlparse, quote, unquote
-from bs4 import BeautifulSoup
-import traceback
-import requests
-import getopt
-import sys
-import re
-
-RETURN_ZERO = 0
-ERR_NO_SEARCH_RESULT = -1
-ERR_SOURCE_NOT_RECOGNIZED = -2
-ERR_OPTION_NOT_RECOGNIZED = -3
-ERR_TOO_MANY_SPACE_IN_QUERY = -4
-ERR_NO_QUERY_GIVEN = -5
-ERR_WHILE_REQUITING_DATA = -6
-ERR_NO_EPISODE_IN_COMIC = -7
-ERR_NO_ARGUMENT_PASSED = -8
-ERR_NOT_CONNECTED_TO_INTERNET = -9
-ERR_FEATURE_NOT_READY = -10
-
-COMIC_TYPE_NAVER = 0
-COMIC_TYPE_DAUM = 2
-COMIC_TYPE_FUNBE = 3
-COMIC_TYPE_KAKAO = 4
-
-
 def search_funbe():
     global final
     global comic_query

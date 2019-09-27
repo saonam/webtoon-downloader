@@ -1,57 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-more information cam be found at usage()
-
-how to make it an executable file:
-pyinstaller --onefile --icon=icon.ico download.py --hidden-import=queue
-"""
-
-print("[INFO] Initializing...")
-import time
-time_start = time.time()
-
-from urllib.parse import quote, urlparse
-from selenium import webdriver
-from natsort import natsorted
-from bs4 import BeautifulSoup
-from PIL import Image
-import subprocess
-import threading
-import traceback
-import requests
-import warnings
-import socket
-import shutil
-import getopt
-import glob
-import json
-import sys
-import os
-
 ###############################################################################
 # Support
-RETURN_ZERO = 0
-ERR_INVALID_URL = -1
-ERR_SOURCE_NOT_RECOGNIZED = -2
-ERR_OPTION_NOT_RECOGNIZED = -3
-ERR_CANNOT_CONNECT_TO_SERVER = -4
-ERR_UNDEFINED = -5
-ERR_RSS = -7
-ERR_COOKIE = -8
-ERR_DOWNLOAD = -9
-ERR_NO_EPISODE = -10
-ERR_NO_IMAGES = -11
-ERR_WHILE_STITCHING_IMAGES = -12
-ERR_FEATURE_NOT_READY = -13
-ERR_SOURCE_IS_NOT_A_NUMBER = -14
-ERR_SOURCE_NOT_GIVEN = -15
-ERR_NOT_CONNECTED_TO_INTERNET = -16
-ERR_NO_ARGUMENT_PASSED = -17
 
-COMIC_TYPE_NAVER = 0
-COMIC_TYPE_NAVER_BEST_CHALLENGE = 1
-COMIC_TYPE_DAUM = 2
-COMIC_TYPE_FUNBE = 3
 
 headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36"}
 
