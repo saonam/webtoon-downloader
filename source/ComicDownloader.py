@@ -112,7 +112,11 @@ class Ui_ComicDownloaderWindow(object):
 
         self.btn_push_search.clicked.connect(self.btn_push_search_click)
         self.action_about.triggered.connect(lambda: print("lol"))
-        self.scroll_area_results.setWidget(QtWidgets.QLabel("asd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadasasd\nsad\nssasa\ndsdasdsad\nsadasas\ndsadasd\nasdsdas\nsadsad\nsdasdas\ndss\naasdsa\ndasd\nasd\nasdasd\nasdasd\nasdasd\nsadas"))
+
+        for i in range(1):
+            label = QtWidgets.QLabel("asdf\n"*100, self.scroll_area_results)
+
+            self.scroll_area_results.setWidget(label)
 
     def retranslateUi(self, ComicDownloaderWindow):
         _translate = QtCore.QCoreApplication.translate
