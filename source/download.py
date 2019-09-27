@@ -5,6 +5,7 @@ more information cam be found at usage()
 how to make it an executable file:
 pyinstaller --onefile --icon=icon.ico download.py --hidden-import=queue
 """
+
 print("[INFO] Initializing...")
 import time
 time_start = time.time()

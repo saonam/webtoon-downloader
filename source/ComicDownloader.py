@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Form implementation generated from reading ui file 'ComicDownloader.ui'
-Created by: PyQt5 UI code generator 5.13.1
-
-Edited by: Anonymous Pomp (anonymouspomp@gmail.com)
-
-Commands:
-    compile: pyinstaller --onefile --icon=./Images/icons8-pluto-dwarf-planet-48.png ComicDownloader.py
+how to compile:
+    pyinstaller --onefile --icon=./Images/icons8-pluto-dwarf-planet-48.png ComicDownloader.py
 """
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -51,7 +46,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.widget_results_scroll.setObjectName("widget_results_scroll")
         self.scroll_area_results.setWidget(self.widget_results_scroll)
         self.v_box_layout_results = QtWidgets.QVBoxLayout(self.widget_results_scroll)
-        self.scroll_area_results_all = QtWidgets.QVBoxLayout(self)
+        self.scroll_area_results_all = QtWidgets.QVBoxLayout()
         self.scroll_area_results_all.addWidget(self.scroll_area_results)
         self.scroll_area_results.setObjectName("scroll_area_results")
         
@@ -147,12 +142,18 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         return sgroupbox
     
     def about_click(self):
-        info = QtWidgets.QMessageBox()
-        info.setWindowTitle("Info")
-        info.setIcon(QtWidgets.QMessageBox.Information)
-        info.setText("Made by: Anonymous Pomp (anonymouspomp@gmail.com)" + "\n"
-                     "https://github.com/AnonymousPomp/Comic-Downloader")
-        info.exec_()
+        text = "<center>" \
+               "<h1>Comic Downloader</h1>" \
+               "</center>" \
+               "Version: v4-alpha<br>" \
+               "Release date: 2019 September 27<br>" \
+               "Copyright: CC-BY 4.0 &copy; AnonymousPomp<br>" \
+               "Email: anonymouspomp@gmail.com<br>" \
+               "<br><br>" \
+               "Source code available on github:<br>" \
+               "https://github.com/AnonymousPomp/Comic-Downloader<br>" \
+        
+        QtWidgets.QMessageBox.about(self, "About", text)
 
     def log_click(self):
         info = QtWidgets.QMessageBox()
