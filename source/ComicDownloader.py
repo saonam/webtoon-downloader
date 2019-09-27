@@ -7,34 +7,37 @@ Edited by: Anonymous Pomp (anonymouspomp@gmail.com)
 
 Commands:
     implement UI: pyuic5 -x ComicDownloader.ui -o ComicDownloader.py
-    compile: pyinstaller --onefile --icon=./Images/icons8-pluto-dwarf-planet-3.ico ComicDownloader.py
+    compile: pyinstaller --onefile --icon=./Images/icons8-pluto-dwarf-planet-48.png ComicDownloader.py
 """
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_ComicDownloaderWindow(object):
-    def setupUi(self, ComicDownloaderWindow):
+class UiComicDownloaderWindow(object):
+    def __init__(self):
+        self.msg_error = ""
         self.width, self.height = 800, 500
         self.y_pos = int((screen_height - self.height) / 2)
         self.x_pos = int((screen_width - self.width) / 2)
         
-        ComicDownloaderWindow.setObjectName("ComicDownloaderWindow")
-        ComicDownloaderWindow.setFixedSize(self.width, self.height)
-        ComicDownloaderWindow.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
+        global ComicDownloaderWindow
+        self.ComicDownloaderWindow = ComicDownloaderWindow
+        self.ComicDownloaderWindow.setObjectName("ComicDownloaderWindow")
+        self.ComicDownloaderWindow.setFixedSize(self.width, self.height)
+        self.ComicDownloaderWindow.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(ComicDownloaderWindow.sizePolicy().hasHeightForWidth())
-        ComicDownloaderWindow.setSizePolicy(sizePolicy)
-        ComicDownloaderWindow.setWindowTitle("Comic Downloader v4-alpha")
+        sizePolicy.setHeightForWidth(self.ComicDownloaderWindow.sizePolicy().hasHeightForWidth())
+        self.ComicDownloaderWindow.setSizePolicy(sizePolicy)
+        self.ComicDownloaderWindow.setWindowTitle("Comic Downloader v4-alpha")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("Images/icons8_Pluto_Dwarf_Planet_3.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        ComicDownloaderWindow.setWindowIcon(icon)
-        ComicDownloaderWindow.setStyleSheet("")
-        self.centralwidget = QtWidgets.QWidget(ComicDownloaderWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.tab_widget_main = QtWidgets.QTabWidget(self.centralwidget)
+        icon.addPixmap(QtGui.QPixmap("Images/icons8-pluto-dwarf-planet-48.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ComicDownloaderWindow.setWindowIcon(icon)
+        self.ComicDownloaderWindow.setStyleSheet("")
+        self.centralWidget = QtWidgets.QWidget(self.ComicDownloaderWindow)
+        self.centralWidget.setObjectName("centralWidget")
+        self.tab_widget_main = QtWidgets.QTabWidget(self.centralWidget)
         self.tab_widget_main.setGeometry(QtCore.QRect(0, 0, 800, 490))
         self.tab_widget_main.setObjectName("tab_widget_main")
         self.tab_search = QtWidgets.QWidget()
@@ -90,37 +93,36 @@ class Ui_ComicDownloaderWindow(object):
         self.scroll_area_widget_contents_downloads.setObjectName("scroll_area_widget_contents_downloads")
         self.scroll_area_downloads.setWidget(self.scroll_area_widget_contents_downloads)
         self.tab_widget_main.addTab(self.tab_downloads, "")
-        ComicDownloaderWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(ComicDownloaderWindow)
+        self.ComicDownloaderWindow.setCentralWidget(self.centralWidget)
+        self.menubar = QtWidgets.QMenuBar(self.ComicDownloaderWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
         self.menubar.setObjectName("menubar")
         self.menu_tools = QtWidgets.QMenu(self.menubar)
         self.menu_tools.setObjectName("menu_tools")
-        ComicDownloaderWindow.setMenuBar(self.menubar)
-        self.action_about = QtWidgets.QAction(ComicDownloaderWindow)
+        self.ComicDownloaderWindow.setMenuBar(self.menubar)
+        self.action_about = QtWidgets.QAction(self.ComicDownloaderWindow)
         self.action_about.setShortcut("")
         self.action_about.setShortcutContext(QtCore.Qt.WindowShortcut)
         self.action_about.setObjectName("action_about")
-        self.action_log = QtWidgets.QAction(ComicDownloaderWindow)
+        self.action_log = QtWidgets.QAction(self.ComicDownloaderWindow)
         self.action_log.setObjectName("action_log")
         self.menu_tools.addAction(self.action_log)
         self.menu_tools.addAction(self.action_about)
         self.menubar.addAction(self.menu_tools.menuAction())
 
-        self.retranslateUi(ComicDownloaderWindow)
+        self.retranslateUi()
         self.tab_widget_main.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(ComicDownloaderWindow)
+        QtCore.QMetaObject.connectSlotsByName(self.ComicDownloaderWindow)
         
         self.btn_push_search.clicked.connect(self.btn_push_search_click)
-        self.action_log.triggered.connect(lambda: print("show log"))
+        self.action_log.triggered.connect(self.log_click)
         self.action_about.triggered.connect(self.about_click)
-        
-        for i in range(1):
-            label = QtWidgets.QLabel("asdf\n"*100, self.scroll_area_results)
-            
+
+        for i in range(100):
+            label = QtWidgets.QLabel("lol\n", self.scroll_area_results)
             self.scroll_area_results.setWidget(label)
-            
-    def retranslateUi(self, ComicDownloaderWindow):
+        
+    def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.combo_box_source.setItemText(0, _translate("ComicDownloaderWindow", "Funbe"))
         
@@ -133,15 +135,18 @@ class Ui_ComicDownloaderWindow(object):
     def btn_push_search_click(self):
         print(self.text_edit_search.toPlainText())
 
-    @staticmethod
-    def about_click():
+    def about_click(self):
         info = QtWidgets.QMessageBox()
         info.setWindowTitle("Info")
         info.setIcon(QtWidgets.QMessageBox.Information)
-        info.setText('''
-Made by: Anonymous Pomp (anonymouspomp@gmail.com)
-https://github.com/AnonymousPomp/Comic-Downloader/
-''')
+        info.setText("Made by: Anonymous Pomp (anonymouspomp@gmail.com)" + "\n"
+                     "https://github.com/AnonymousPomp/Comic-Downloader")
+        info.exec_()
+
+    def log_click(self):
+        info = QtWidgets.QMessageBox()
+        info.setWindowTitle("Log")
+        info.setText(self.msg_error)
         info.exec_()
 
 
@@ -159,11 +164,11 @@ class SearchBox(QtWidgets.QTextEdit):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyle("Fusion")
     screen_resolution = app.desktop().screenGeometry()
     screen_width, screen_height = screen_resolution.width(), screen_resolution.height()
     
     ComicDownloaderWindow = QtWidgets.QMainWindow()
-    ui = Ui_ComicDownloaderWindow()
-    ui.setupUi(ComicDownloaderWindow)
+    ui = UiComicDownloaderWindow()
     ComicDownloaderWindow.show()
     sys.exit(app.exec_())
