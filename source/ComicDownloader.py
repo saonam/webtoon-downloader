@@ -7,7 +7,6 @@ how to make it an executable file:
 
 # todo: remove sys.exit()
 # todo: remove print (replace it with log())
-# todo: increase log window size
 # todo: make log window sizable
 """
 
@@ -72,7 +71,7 @@ ERR_WHILE_STITCHING_IMAGES = -19
 ERR_SOURCE_IS_NOT_A_NUMBER = -20
 ERR_SOURCE_NOT_GIVEN = -21
 
-COMIC_TYPE_FUNBE = 0
+COMIC_TYPE_SPOWIKI = 0
 COMIC_TYPE_NAVER = 1
 COMIC_TYPE_NAVER_BEST_CHALLENGE = 2
 COMIC_TYPE_DAUM = 3
@@ -136,11 +135,8 @@ def stitch_image(path, location):
         
         img_final.save("%s/%s.png" % (location, path), "PNG", quality=100)
     
-    except Exception as err_stitch:
-        print()
-        print("[ERROR] while stitching image:", err_stitch)
-        print(traceback.format_exc())
-        sys.exit(ERR_WHILE_STITCHING_IMAGES)
+    except:
+        log("[ERROR] [%s] %s" % (ERR_WHILE_STITCHING_IMAGES, traceback.format_exc()))
 
 
 def mkdir_smart(name):
@@ -155,214 +151,154 @@ def mkdir_smart(name):
         return False
 
 
-def search(mode, comic_query):
-    final = []
+class SearchThread(QtCore.QThread):
+    UPDATE_UI = 1
+    SEARCH_RESULT = 2
+    sig = QtCore.pyqtSignal(object, object)
     
-    if mode == COMIC_TYPE_NAVER:
-        source = "naver"
-    elif mode == COMIC_TYPE_NAVER_BEST_CHALLENGE:
-        source = "naver best challenge"
-    elif mode == COMIC_TYPE_DAUM:
-        source = "daum"
-    elif mode == COMIC_TYPE_FUNBE:
-        source = "funbe"
-    elif mode == COMIC_TYPE_KAKAO:
-        source = "kakao"
-    else:
-        source = "undefined"
+    def __init__(self, *args, **kwargs):
+        super(SearchThread, self).__init__(*args, **kwargs)
     
-    log("[INFO] Searching for: \"%s\" on %s" % (comic_query, source))
-    
-    if mode == COMIC_TYPE_NAVER or mode == COMIC_TYPE_NAVER_BEST_CHALLENGE:
-        link = 'https://comic.naver.com/search.nhn?keyword={0}'.format(comic_query)
+    def search(self, mode, comic_query):
+        final = []
         
-        comic_html = requests.get(link).text
-        comic_soup = BeautifulSoup(comic_html, 'html.parser')
+        if mode == COMIC_TYPE_NAVER:
+            source = "naver"
+        elif mode == COMIC_TYPE_NAVER_BEST_CHALLENGE:
+            source = "naver best challenge"
+        elif mode == COMIC_TYPE_DAUM:
+            source = "daum"
+        elif mode == COMIC_TYPE_SPOWIKI:
+            source = "spowiki"
+        elif mode == COMIC_TYPE_KAKAO:
+            source = "kakao"
+        else:
+            source = "undefined"
         
-        try:
-            search_result = comic_soup.select('#content > div > ul > li > h5 > a')
-        except AttributeError:
-            print("[ERROR] No search result")
-            print(traceback.format_exc())
-            sys.exit(ERR_NO_SEARCH_RESULT)
+        log("[INFO] Searching for: \"%s\" on %s" % (comic_query, source))
         
-        for i in search_result:
-            url = str(i.get('href'))
-            if '://' in url:
-                final.append(url)
-            else:
-                final.append('{uri.netloc}'.format(uri=urlparse(link)) + url)
-        # ################## get_eps
-        # incomplete. doesn't work yet
-        try:
-            for i in comic_soup.select('#content > table > tbody > tr > td.title > a')[::-1]:
-                print('{uri.netloc}'.format(uri=urlparse(link)) + i.get('href'))
+        if mode == COMIC_TYPE_NAVER or mode == COMIC_TYPE_NAVER_BEST_CHALLENGE:
+            link = 'https://comic.naver.com/search.nhn?keyword={0}'.format(comic_query)
         
-        except AttributeError:
-            print("[ERROR] No episodes in comic")
-            print(traceback.format_exc())
-            sys.exit(ERR_NO_EPISODE_IN_COMIC)
-    elif mode == COMIC_TYPE_DAUM:
-        pass
-    elif mode == COMIC_TYPE_FUNBE:
-        link = 'https://funbe17.com/bbs/search.php?stx=' + quote(comic_query.strip())
-        
-        try:
             comic_html = requests.get(link).text
             comic_soup = BeautifulSoup(comic_html, 'html.parser')
         
-        except requests.exceptions.ConnectionError:
-            log("[ERROR] Cannot connect to server\n" + traceback.format_exc())
-            return ERR_WHILE_REQUITING_DATA
+            try:
+                search_result = comic_soup.select('#content > div > ul > li > h5 > a')
+            except AttributeError:
+                log("[ERROR] [%s] %s" % (ERR_NO_SEARCH_RESULT, traceback.format_exc()))
         
-        try:
-            comics = ["https://funbe17.com" + i.get('href') for i in comic_soup.select('#title')]
+            for i in search_result:
+                url = str(i.get('href'))
+                if '://' in url:
+                    final.append(url)
+                else:
+                    final.append('{uri.netloc}'.format(uri=urlparse(link)) + url)
+            # ################## get_eps
+            # incomplete. doesn't work yet
+            try:
+                for i in comic_soup.select('#content > table > tbody > tr > td.title > a')[::-1]:
+                    print('{uri.netloc}'.format(uri=urlparse(link)) + i.get('href'))
         
-        except AttributeError:
-            log("[ERROR] No search result")
-            log(traceback.format_exc())
-            sys.exit(ERR_NO_SEARCH_RESULT)
-        
-        # ########################### get_eps
-        try:
-            pat = re.compile(r"총 \d+화")
-            print("total: ", len(comics))
+            except AttributeError:
+                print("[ERROR] No episodes in comic")
+                print(traceback.format_exc())
+                sys.exit(ERR_NO_EPISODE_IN_COMIC)
+        elif mode == COMIC_TYPE_DAUM:
+            pass
+        elif mode == COMIC_TYPE_SPOWIKI:
+            link = "https://tv.spowiki.com/bbs/board.php?bo_table=webtoon&wt_title=" + quote(comic_query.strip())
             
-            for i in range(len(comics)):
-                print(i)
-                final.append(list())
+            try:
+                comic_html = requests.get(link).text
+                comic_soup = BeautifulSoup(comic_html, 'html.parser')
+            except requests.exceptions.ConnectionError:
+                log("[ERROR] Cannot connect to server\n" + traceback.format_exc())
+                return ERR_WHILE_REQUITING_DATA
+            
+            try:
+                comics = [comic.get("href") for comic in comic_soup.find_all("a", attrs={"class", "title"})]
                 
-                comic_html = requests.get(comics[i])
-                comic_soup = BeautifulSoup(comic_html.text, "html.parser")
+            except AttributeError:
+                log("[ERROR] No search result")
+                log(traceback.format_exc())
+                sys.exit(ERR_NO_SEARCH_RESULT)
                 
-                episodes = ["https://funbe17.com" + n.get("data-role") for n in
-                            comic_soup.select('#fboardlist > table > tr > td.content__title')[::-1]]
+            # ########################### get_eps
+            try:
+                suffix = " comic"
+                number_of_comics = len(comics)
+                if number_of_comics > 1:
+                    suffix += "s"
+                suffix += "..."
                 
-                try:
-                    # title
-                    title = comic_soup.find("meta", attrs={"property": "og:title"}).get("content")
-                    if title == "펀비(Funbe)":
-                        print("lol error")
-                        continue
+                for i in range(len(comics)):
+                    ComicDownloader.label_error.setText("parsing [%s/%s] %s" % (i, number_of_comics, suffix))
                     
-                    final[i].append(episodes)
+                    final.append(list())
                     
-                    final[i].append(title)
+                    comic_html = requests.get(comics[i])
+                    comic_soup = BeautifulSoup(comic_html.text, "html.parser")
                     
-                    # comic URL
-                    final[i].append(comics[i])
+                    episodes = [episode.get("href") for episode in comic_soup.select("#fboardlist > div > table.bt-table > tbody > tr > td > a")[::-1]]
                     
-                    # synopsis
-                    final[i].append(comic_soup.find("td", attrs={"class": "bt_over"}).text)
+                    try:
+                        # title
+                        title = comic_soup.select_one("#wt_view > div.explain > h2 > a").text
+                        
+                        final[i].append(episodes)
+                        
+                        final[i].append(title)
+                        
+                        # comic URL
+                        final[i].append(comics[i])
+                        
+                        # synopsis
+                        final[i].append(comic_soup.select_one("#wt_view > div.overview").text)
+                        
+                        # author
+                        author = comic_soup.select_one("dl.summ > dd:nth-child(2)").text
+                        
+                        # latest update
+                        final[i].append(comic_soup.select_one("#fboardlist > div:nth-child(10) > table > tbody > tr:nth-child(1) > td.td_date").text)
+                        
+                        # number of episodes
+                        final[i].append(number_of_comics)
+                        
+                        # thumbnail image link
+                        final[i].append(comic_soup.select_one("#wt_view > div.thumb > a > img").get("src"))
+                        
+                    except AttributeError:
+                        print("[ERROR] Error while parsing funbe comic")
+                        print(traceback.format_exc())
+                        sys.exit(ERR_WHILE_REQUITING_DATA)
                     
-                    # author
-                    author = comic_soup.find("span", attrs={"class": "bt_data"}).text.strip()
-                    if not pat.match(author):
-                        final[i].append(author)
-                    else:
-                        final[i].append("None")
-                    
-                    # latest update
-                    final[i].append(
-                        comic_soup.select_one("#fboardlist > table > tr:nth-child(1) > td.episode__index").text.strip())
-                    
-                    # number of episodes
-                    final[i].append(comic_soup.find("span", attrs={"class": "tcnt"}).text.split("|")[1].strip()[2:-2])
-                    
-                    # thumbnail image link
-                    final[i].append("https://funbe17.com" + comic_soup.select_one(
-                        "#containerCol > table.bt_view2 > tbody > tr:nth-child(1) > td > a > img").get("src"))
-                
-                except AttributeError:
-                    print("[ERROR] Error while parsing funbe comic")
-                    print(traceback.format_exc())
-                    sys.exit(ERR_WHILE_REQUITING_DATA)
+            except AttributeError:
+                print("[ERROR] No episodes in comic")
+                print(traceback.format_exc())
+                sys.exit(ERR_NO_EPISODE_IN_COMIC)
+        elif mode == COMIC_TYPE_KAKAO:
+            pass
         
-        except AttributeError:
-            print("[ERROR] No episodes in comic")
-            print(traceback.format_exc())
-            sys.exit(ERR_NO_EPISODE_IN_COMIC)
-    elif mode == COMIC_TYPE_KAKAO:
-        pass
-    
-    return final
-
-
-class Worker(QtCore.QRunnable):
-    """
-    Big thanks to: Martin Fitzpatrick (https://github.com/mfitzp)
-    got code from: https://www.learnpyqt.com/courses/concurrent-execution/multithreading-pyqt-applications-qthreadpool
-    
-    Worker thread
-
-    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
-
-    :param callback: The function callback to run on this worker thread. Supplied args and
-                     kwargs will be passed through to the runner.
-    :type callback: function
-    :param args: Arguments to pass to the callback function
-    :param kwargs: Keywords to pass to the callback function
-    """
-    
-    class WorkerSignals(QtCore.QObject):
-        """
-        Defines the signals available from a running worker thread.
-
-        Supported signals are:
-
-        finished
-            No data
-
-        error
-            `tuple` (exctype, value, traceback.format_exc() )
-
-        result
-            `object` data returned from processing, anything
-
-        progress
-            `int` indicating % progress
-
-        """
-        finished = QtCore.pyqtSignal()
-        error = QtCore.pyqtSignal(tuple)
-        result = QtCore.pyqtSignal(object)
-        progress = QtCore.pyqtSignal(int)
-    
-    def __init__(self, fn, *args, **kwargs):
-        super(Worker, self).__init__()
+        if not final:
+            ComicDownloader.label_error.setText("No search result")
+            return
         
-        # Store constructor arguments (re-used for processing)
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-        self.signals = self.WorkerSignals()
+        suffix = " comic"
+        number_of_comics = len(final)
+        if number_of_comics > 1:
+            suffix += "s"
         
-        # Add the callback to our kwargs
-        self.kwargs['progress_callback'] = self.signals.progress
-    
-    @QtCore.pyqtSlot()
-    def run(self):
-        """
-        Initialise the runner function with passed args, kwargs.
-        """
+        ComicDownloader.label_error.setText("found %s %s" % (number_of_comics, suffix))
         
-        try:
-            result = self.fn(*self.args, **self.kwargs)
-        except:
-            traceback.print_exc()
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
-        else:
-            self.signals.result.emit(result)
-        finally:
-            self.signals.finished.emit()
+        self.sig.emit(0, "update UI")
 
 
 ###############################################################################
 # funbe
 def funbe(url, ep_name):
     """
-        A function that downloads a episode of comic from https://funbe17.com
+        A function that downloads a episode of comic from https://funbe19.com
     """
     
     def funbe_image(i, image_url):
@@ -374,7 +310,7 @@ def funbe(url, ep_name):
     try:
         print("[INFO] Loading page (it may take a while)...")
         driver = webdriver.PhantomJS(service_args=['--load-images=no'])
-        driver.get("https://funbe17.com" + quote(urlparse(url).path))
+        driver.get("https://funbe19.com" + quote(urlparse(url).path))
         
         comic_html = driver.page_source
         comic_soup = BeautifulSoup(comic_html, 'html.parser')
@@ -388,7 +324,7 @@ def funbe(url, ep_name):
     try:
         # acquire list of urls of each image that composes the entire comic
         # usually, to save loading time, a comic is fragmented into smaller pieces
-        imgs_links = ["https://funbe17.com" + i.get("src") for i in comic_soup.select("#toon_img > img")]
+        imgs_links = ["https://funbe19.com" + i.get("src") for i in comic_soup.select("#toon_img > img")]
         # images_length = len(imgs_links)
         
         # actual downloading happens here
@@ -400,7 +336,7 @@ def funbe(url, ep_name):
         tasks = []
         for i, image in enumerate(imgs_links):
             print("[EP]{0}[I]{1}".format(ep_name, i + 1))
-            tasks.append(threading.Thread(target=funbe_image, args=(i, image)))
+            tasks.append(threading.Thread(target=funbe_image, args=(i, image), name="funbe_image_download_thread_%s" % i))
             tasks[i].start()
         
         [i.join() for i in tasks]
@@ -677,14 +613,13 @@ def daum(title, episode_start, episode_end, output_dir):
 
 ###############################################################################
 class UiComicDownloaderWindow(QtWidgets.QMainWindow):
+    sig = QtCore.pyqtSignal(int, str)
+    
     def __init__(self, *args, **kwargs):
         super(UiComicDownloaderWindow, self).__init__(*args, **kwargs)
         self.width, self.height = 800, 500
-        self.y_pos = int((screen_height - self.height) / 2)
-        self.x_pos = int((screen_width - self.width) / 2)
         
         self.setObjectName("ComicDownloaderWindow")
-        self.setGeometry(self.x_pos, self.y_pos, self.width, self.height)
         self.setFixedSize(self.width, self.height)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -714,11 +649,13 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.widget_results_scroll.setObjectName("widget_results_scroll")
         self.scroll_area_results.setWidget(self.widget_results_scroll)
         self.v_box_layout_results = QtWidgets.QVBoxLayout(self.widget_results_scroll)
+        self.widget_results_scroll.setLayout(self.v_box_layout_results)
         self.scroll_area_results_all = QtWidgets.QVBoxLayout()
         self.scroll_area_results_all.addWidget(self.scroll_area_results)
         self.scroll_area_results.setObjectName("scroll_area_results")
         
         self.text_edit_search = SearchBox(self.tab_search)
+        self.text_edit_search.setPlaceholderText("Search")
         self.text_edit_search.setGeometry(QtCore.QRect(150, 0, 600, 30))
         self.text_edit_search.setObjectName("text_edit_search")
         
@@ -778,11 +715,18 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.tab_widget_main.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
         
-        self.thread_pool = QtCore.QThreadPool()
-        
         self.btn_push_search.clicked.connect(self.btn_push_search_click)
         self.action_log.triggered.connect(self.log_click)
         self.action_about.triggered.connect(self.about_click)
+        
+        self.text_edit_search.setFocus()
+        self.text_edit_search.setText("나 혼자만 레벨업")
+        
+        self.search_thread = SearchThread()
+        self.search_thread.start()
+        
+        self.search_thread.sig.connect(self.UI)
+        self.sig.connect(self.search_thread.search)
     
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -798,57 +742,21 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.action_log.setText(_translate("ComicDownloaderWindow", "Show Log"))
     
     def btn_push_search_click(self):
-        def searching(progress_callback):
-            for search_result in search_results:
-                self.v_box_layout_results.addWidget(self.createLayout_group(search_result))
-                progress_callback.emit(0)  # n * 100 / 4
-                print(".")
+        self.label_error.setText("Searching...")
+        # self.btn_push_search.setEnabled(False)
         
-        self.show_progress("Searching...")
-        search_query = self.text_edit_search.toPlainText().strip()
-        
+        search_query = self.text_edit_search.text().strip()
+
         if not search_query:
-            self.show_progress("You haven't entered anything to search")
+            self.label_error.setText("You haven't entered anything to search")
             return
+
+        self.sig.emit(self.combo_box_source.currentIndex(), search_query)
         
-        search_results = search(self.combo_box_source.currentIndex(), search_query)
-        if not search_results:
-            self.show_progress("No search result")
-            return
-        
-        search_worker = Worker(searching)
-        # search_worker.signals.result.connect(self.print_output)  # s
-        search_worker.signals.finished.connect(lambda: self.show_progress(""))
-        # search_worker.signals.progress.connect(self.progress_fn)  # n
-        
-        self.thread_pool.start(search_worker)
-    
-    def createLayout_group(self, search_result):
         """
-        search_result:
-            0 list episodes
-            1 str title
-            2 str comic URL
-            3 str synopsis
-            4 str authors
-            5 str last date of update
-            6 str total episodes
-            7 str thumbnail
-        
-        :param search_result: A list of information about a comic
-        :return: QtWidgets.QGroupBox
+        for search_result in search_results:
+            self.v_box_layout_results.addWidget(self.createLayout_group(search_result))
         """
-        comic_groupbox = QtWidgets.QGroupBox(self)
-        comic_groupbox.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-        
-        layout_groupbox = QtWidgets.QVBoxLayout(comic_groupbox)
-        
-        item = QtWidgets.QLabel(search_result[1], comic_groupbox)
-        
-        layout_groupbox.addWidget(item)
-        
-        return comic_groupbox
-    
     def about_click(self):
         text = "<center>" \
                "<h1>Comic Downloader</h1>" \
@@ -865,12 +773,51 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
     def log_click(self):
         log("[INFO] Displaying Log")
         ScrollMessageBox(self).exec_()
+
+    def createLayout_group(self, comic_data):
+        """
+        search_result:
+            0 list episodes
+            1 str title
+            2 str comic URL
+            3 str synopsis
+            4 str authors
+            5 str last date of update
+            6 str total episodes
+            7 str thumbnail
+        """
+        groupBox = QtWidgets.QGroupBox("Best Food")
     
-    def show_progress(self, message):
-        self.thread_pool.start(Worker(lambda progress_callback: self.label_error.setText(message)))
+        radio1 = QtWidgets.QRadioButton("&Radio pizza")
+        radio2 = QtWidgets.QRadioButton("R&adio taco")
+        radio3 = QtWidgets.QRadioButton("Ra&dio burrito")
+    
+        radio1.setChecked(True)
+    
+        vbox = QtWidgets.QVBoxLayout()
+        vbox.addWidget(radio1)
+        vbox.addWidget(radio2)
+        vbox.addWidget(radio3)
+        vbox.addStretch(1)
+        groupBox.setLayout(vbox)
+    
+        return groupBox
+    
+        """comic_groupbox = QtWidgets.QGroupBox()
+        comic_groupbox.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
+        # layout_groupbox = QtWidgets.QVBoxLayout(comic_groupbox)
 
-class SearchBox(QtWidgets.QTextEdit):
+        comic_group_title = QtWidgets.QLabel(comic_data[1], comic_groupbox)
+        comic_groupbox.addWidget(comic_group_title)
+
+        return comic_groupbox"""
+
+    def UI(self, data1, data2):
+        print(data1, data2)
+    
+
+class SearchBox(QtWidgets.QLineEdit):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
@@ -898,12 +845,27 @@ class ScrollMessageBox(QtWidgets.QMessageBox):
         self.setStyleSheet("QScrollArea{min-width:700 px; min-height: 400px}")
 
 
+class ComicGroupBox(QtWidgets.QGroupBox):
+    def __init__(self, *args, **kwargs):
+        super(ComicGroupBox, self).__init__(*args, **kwargs)
+        
+        vbox = QtWidgets.QVBoxLayout()
+        self.setLayout(vbox)
+        
+        radiobutton = QtWidgets.QRadioButton("RadioButton 1")
+        vbox.addWidget(radiobutton)
+        
+        radiobutton = QtWidgets.QRadioButton("RadioButton 2")
+        vbox.addWidget(radiobutton)
+
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("Fusion")
+
     screen_resolution = app.desktop().screenGeometry()
-    screen_width, screen_height = screen_resolution.width(), screen_resolution.height()
     log("[INFO] Displaying GUI")
     ComicDownloader = UiComicDownloaderWindow()
+    ComicDownloader.move(screen_resolution.center() - ComicDownloader.rect().center())
     ComicDownloader.show()
     sys.exit(app.exec_())
