@@ -11,6 +11,10 @@ how to make it an executable file:
 # todo: iterators -> generators
 # todo: remove unnecessary image loading
 # todo: add prevsearch
+# todo: threading pool (maximum 3 episodes at any given moment)
+# todo: update documentation
+# todo: show download progress
+# todo: close all thread when [X] button is clicked
 """
 __author__ = "Anonymous Pomp <anonymouspomp@gmail.com>"
 
@@ -31,6 +35,7 @@ def log(message):
 
 log("[INFO] Program Launched")
 
+from multiprocessing.dummy import Pool as ThreadPool
 from PyQt5 import QtCore, QtGui, QtWidgets
 from natsort import natsorted
 from bs4 import BeautifulSoup
@@ -160,7 +165,7 @@ def mkdir_smart(name):
 
 ###############################################################################
 # Spowiki
-def download_spowiki(url, ep_name):
+def download_spowiki(url):
     """
         A function that downloads a episode of comic from https://tv.spowiki.com/
     """
@@ -593,7 +598,6 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.action_about.triggered.connect(self.about_click)
         
         self.text_edit_search.setFocus()
-        self.text_edit_search.setText("나 혼자만 레벨업")
         
         self.search_thread = SearchThread()
         
@@ -601,7 +605,6 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.sig.connect(self.search_thread.go_search)
         
         self.search_thread.start()
-        self.btn_push_search_click()
     
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -943,13 +946,19 @@ class ComicGroupBox(QtWidgets.QGroupBox):
         btn_download.setIcon(QtGui.QIcon(btn_download_pixmap))
         btn_download.move(710, 130)
         
-        btn_download.click()
-        
     def browse(self):
         webbrowser.open_new_tab(self.COMIC)
         
     def download(self):
-        threading.Thread(target=download_spowiki, args=(self.EPISODES[0], "lolz")).start()
+        def start_pool():
+            pool = ThreadPool(3)
+            
+            pool.map(download_spowiki, self.EPISODES)
+            
+            pool.close()
+            pool.join()
+        
+        threading.Thread(target=start_pool).start()
         
         
 if __name__ == "__main__":
