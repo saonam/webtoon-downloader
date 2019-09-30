@@ -1,38 +1,48 @@
-># Read Documentation in [Korean](#웹툰-다운로더)<br>[한국어](#웹툰-다운로더)로 도큐멘테이션 읽기
+>Read Documentation in [Korean](#웹툰-다운로더) ([한국어](#웹툰-다운로더)로 도큐멘테이션 읽기)
+
+<br>
+<br>
+<br>
+<br>
+<br>
 
 # Comic Downloader
 
 > ## [Download Page](https://github.com/AnonymousPomp/Comic-Downloader/releases/)
 
-This is a C# and python project that downloads web comic using C# and python.
+This is a program that downloads Korean webcomics from various sources.
 
-The program is still in alpha version (in development), so the program may not be working properly.
+The program is still in alpha version (in development), so some part of the program may not be working properly.
+
+downloading takes from 10 second up to 100 second or more depending on your internet connection and the length of the comic.
+
+# Installation
+## Windows
+You can go to [Download Page](https://github.com/AnonymousPomp/Comic-Downloader/releases/) and download the latest version by clicking on "Assets" and downlaoding the zip file that contains all the data.
+
+## Linux
+1.) Clone the repository
+Converting python source code to an executable .exe file: command is commented at top of each python files.
 
 # Warning
 >**I have no responsibility over what you do with my program**
 
->Downloading web comic for commercial use is an illegal, and punishable by law. Please download the comics **for personal use ONLY**.
+>Downloading web comic for commercial use is illegal, and punishable by law. Please download the comics **for personal use ONLY**.
 
->If there is an **Error** in the program, **stuck** at any point for whatever reason, have a **suggestion** for the project, please be kind enough to tell it to me in the [Issue page](https://github.com/AnonymousPomp/Comic-Downloader/issues), or emailing me at <anonymouspomp@gmail.com>. As a developer, this kind of  feedbacks help me a lot, and each and every single one makes my day a bit better. : )
+>If there is an **Error** in the program, **stuck** at any point for whatever reason, have a **suggestion** for the project, please be kind enough to tell it to me in the [Issue page](https://github.com/AnonymousPomp/Comic-Downloader/issues), or emailing me at <anonymouspomp@gmail.com>. As a developer, this kind of feedbacks help me a lot, and each and every single one makes my day a bit better. : )
 
->In case a connection to the cannot be made, please try to use the newest version of the downloader, and if the download still doesn't work, please notify me using the methods written above.
+>In case a connection to the server cannot be established, please try to use the newest version of the downloader, and if the download still doesn't work, please notify me using methods listed above.
 
 >Some of the comics includes PG16+ contents (including PG19).
 
 >All comics include watermarks. A watermark remover will be added in the near future
-
-# How to use
-By clicking the planet icon, ...
-
-downloading takes from 20 second up to 100 second or more depending on your internet connection and the length of the comic.
 
 # For Developers
 >All information from this point on are for developers who want to build upon my program. Ordinary users don't necessarily have to read it.
 
 >This documentation assumes taht you have the following knowledge:
 >- Intermediate knowledge about python
->- Basic knowledge about C#
->- Basic knowledge about command prompt (cmd)
+>- Basic knowledge about terminal (bash, shell, cmd, etc.)
 >- Basic knowledge about VCS(version control system) (git)
 
 >This Project is protected by [CC BY License 4.0](https://creativecommons.org/licenses/by/4.0/)
@@ -40,20 +50,14 @@ downloading takes from 20 second up to 100 second or more depending on your inte
 >You are allowed to distribute, remix, tweak, and build up on the project, even commercially, as long as you put a credit for the original creation.
 You can find more information [Here](https://en.wikipedia.org/wiki/Creative_Commons_license#Types_of_licenses)
 
-> PhantomJS available at: https://phantomjs.org/download.html
-
 Development Environment:
-- Python 3.6.9 with Pycharm
+- Programming Language: [Python 3.6.9](https://www.python.org)
+- Designer: [Qt Designer](https://doc.qt.io/qt-5/qtdesigner-manual.html)
+- IDE: [Pycharm](https://www.jetbrains.com/pycharm/download)
 
 Test environment:
-- Windows 10 (Virtual Box)
-- Linux (Ubuntu 18.04)
-
-Converting python source code to an executable .exe file: command is commented at top of each python files.
-
-If you want to test the code after editing the source code, pass "-t" or "--test" to the argument like this: `python <file_name>.py -t` or `python <file_name>.py --test` (also applies to compiled .exe file). This will fill in all the necessary information for you. You can change specific values by passing the default arguments like this: `python <file_name>.py -t -e 1-1`
-
->More information wil be added in the near future
+- [Windows 10](https://www.microsoft.com/en-us/software-download/windows10ISO)
+- [Linux (Ubuntu 18.04.3 LTS)](https://ubuntu.com/download/desktop)
 
 <br>
 <br>
@@ -87,7 +91,7 @@ If you want to test the code after editing the source code, pass "-t" or "--test
 # 사용법
 행성 모양의 아이콘을 클릭하시면 ... <추가될 예정>
 
-인터넷 속도와 웹툰의 길이에 따라 다운로드 시간은 20초에서 100초정도 걸립니다.
+인터넷 속도와 웹툰의 길이에 따라 다운로드 시간은 10초에서 100초정도 걸립니다.
 
 # 개발자들을 위해서
 >여기서부터 나오는 모든 내용은 저의 프로그램을 사용하고 싶은 개발자들을 위한 내용들입니다. 일반 사용자들은 읽지 않으셔도 상관 없습니다.
@@ -108,8 +112,6 @@ If you want to test the code after editing the source code, pass "-t" or "--test
 - Windows 10 (Virtual Box)
 - 리눅스 (우분투 18.04)
 
-파이썬 코드를 exe 파일로 변환하기: 각 코드 안에 커맨드가 포함되어 있습니다.
-
-코드 수정 한 후 테스트를 하고 싶다면 `python <file_name>.py -t` 혹은 `python <file_name>.py --test` 를 통해 테스트하실 수 잇습니다 (exe 버전도 해당).
+파이썬 코드를 exe 파일로 변환하기: 코드 맨 위에 커맨드가 주석 처리되어 있습니다.
 
 >더 자세한 내용은 추후에 추가될 예정
