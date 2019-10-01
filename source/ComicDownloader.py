@@ -1,28 +1,45 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """
 how to make it an executable file:
     pyinstaller --onefile --windowed --icon=icons8-pluto-dwarf-planet-48.png ComicDownloader.py --hidden-import=queue
 
-# todo: remove sys.exit()
 # todo: fix error management
 # todo: remove print (replace it with log())
 # todo: make log window sizable
 # todo: iterators -> generators
 # todo: remove unnecessary image loading
-# todo: add prevsearch
 # todo: threading pool (maximum 3 episodes at any given moment)
 # todo: update documentation
 # todo: show download progress
 # todo: close all thread when [X] button is clicked
+# todo: yield
+# todo: minimize import
+# todo: add custom save location
+# todo: add nsfw filter
+# todo: add watermark remover
+# todo: parallelize search
+# todo: show download progress in UI
+# todo: put as many multiprocessing as possible
+# todo: download in "comics/" directory
+# todo: show downloaded  comics
+# todo: add tutorial mode
+# todo: make data_save file (pkl)
+# todo: disable searching when the program is already searching
+# todo: add "read" button to downloaded comics
+# todo: add update checker
+# todo: show time taken to download
+# todo: check if images_downloaded works
 """
-__author__ = "Anonymous Pomp <anonymouspomp@gmail.com>"
+
+__version__ = "v4-alpha"
 
 log_message = ""
 
-import time
+from time import time, sleep
 
-time_start = time.time()
+time_start = time()
 from decimal import Decimal
 
 
@@ -30,53 +47,29 @@ def log(message):
     global log_message
     if type(message) is not str:
         message = str(message)
-    log_message += "[" + str(Decimal(time.time() - time_start))[:5] + "s] " + message + "\n"
+    log_message += "[" + str(Decimal(time() - time_start))[:5] + "s] " + message + "\n"
 
 
 log("[INFO] Program Launched")
 
 from multiprocessing.dummy import Pool as ThreadPool
+from os import path, makedirs, system, environ
 from PyQt5 import QtCore, QtGui, QtWidgets
+from webbrowser import open_new_tab
+from traceback import format_exc
 from natsort import natsorted
 from bs4 import BeautifulSoup
+from threading import Thread
+from subprocess import Popen
+from shutil import rmtree
+from json import loads
+from glob import glob
 from PIL import Image
-import webbrowser
-import subprocess
-import threading
-import traceback
 import requests
-import warnings
-import shutil
-import glob
-import json
-import time
 import sys
-import os
+
 
 log("[INFO] Loaded libraries")
-
-RETURN_ZERO = 0
-ERR_NO_SEARCH_RESULT = -1
-ERR_SOURCE_NOT_RECOGNIZED = -2
-ERR_OPTION_NOT_RECOGNIZED = -3
-ERR_TOO_MANY_SPACE_IN_QUERY = -4
-ERR_NO_QUERY_GIVEN = -5
-ERR_WHILE_REQUITING_DATA = -6
-ERR_NO_EPISODE_IN_COMIC = -7
-ERR_NO_ARGUMENT_PASSED = -8
-ERR_NOT_CONNECTED_TO_INTERNET = -9
-ERR_FEATURE_NOT_READY = -10
-ERR_INVALID_URL = -11
-ERR_CANNOT_CONNECT_TO_SERVER = -12
-ERR_UNDEFINED = -13
-ERR_RSS = -14
-ERR_COOKIE = -15
-ERR_DOWNLOAD = -16
-ERR_NO_EPISODE = -17
-ERR_NO_IMAGES = -18
-ERR_WHILE_STITCHING_IMAGES = -19
-ERR_SOURCE_IS_NOT_A_NUMBER = -20
-ERR_SOURCE_NOT_GIVEN = -21
 
 COMIC_TYPE_SPOWIKI = 0
 COMIC_TYPE_NAVER = 1
@@ -91,10 +84,7 @@ IMG_LOGO_48 = b"iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+g
 
 ###############################################################################
 # Support
-headers = {
-    'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36"}
-
-warnings.filterwarnings("ignore")  # to suppress selenium phantomjs deprecation warning
+headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36"}
 
 # if the program has been compiled
 if hasattr(sys, "frozen"):
@@ -105,12 +95,12 @@ if hasattr(sys, "frozen"):
     
     
     def override_where():
-        return os.path.abspath("cacert.pem")
+        return path.abspath("cacert.pem")
     
     
     import certifi.core
     
-    os.environ["REQUESTS_CA_BUNDLE"] = override_where()
+    environ["REQUESTS_CA_BUNDLE"] = override_where()
     certifi.core.where = override_where
     
     # delay importing until after where() has been replaced
@@ -123,12 +113,11 @@ if hasattr(sys, "frozen"):
     requests.adapters.DEFAULT_CA_BUNDLE_PATH = override_where()
 
 
-def stitch_image(path, location):
+def stitch_image(images_path, location):
     try:
-        images = natsorted(glob.glob(path + '/*.*'))  # get a list of images
+        images = natsorted(glob(images_path + '/*.*'))  # get a list of images
         
-        XY_value_list = [[Image.open(file).size[0], Image.open(file).size[1]] for file in
-                         images]  # get the dimension of all the images
+        XY_value_list = [[Image.open(file).size[0], Image.open(file).size[1]] for file in images]  # get the dimension of all the images
         height = int(sum([y for (x, y) in XY_value_list]))
         
         # prepare a empty canvas (may take a lot of space of the memory)
@@ -137,7 +126,7 @@ def stitch_image(path, location):
         except ValueError:
             print()
             print("[ERROR] The comic has no images to stitch")
-            sys.exit(ERR_NO_IMAGES)
+            return
         y_offset = 0
         
         # loop all images
@@ -148,7 +137,7 @@ def stitch_image(path, location):
         img_final.save("%s/%s.png" % (location, path), "PNG", quality=100)
     
     except:
-        log("[ERROR] [%s] %s" % (ERR_WHILE_STITCHING_IMAGES, traceback.format_exc()))
+        log("[ERROR] Cannot stitch images\n%s" % format_exc())
 
 
 def mkdir_smart(name):
@@ -156,8 +145,8 @@ def mkdir_smart(name):
         A function that creates a directory if it doesn't exists
     """
     try:
-        if not os.path.isdir(str(name)):
-            os.makedirs(os.path.join(str(name)))
+        if not path.isdir(str(name)):
+            makedirs(path.join(str(name)))
             return True
     except OSError:
         return False
@@ -171,9 +160,11 @@ def download_spowiki(url):
     """
     
     def spowiki_image(i, image_url):
+        print("%s / %s" % (images_downloaded, number_of_images))
         img = requests.get(image_url, headers=headers).content  # get image
         open(ep_name + "/" + str(i + 1) + ".jpg", "wb").write(img)  # write image
-    
+        images_downloaded += 1
+        
     log("[INFO] Downloading: %s" % url)
     
     try:
@@ -184,8 +175,9 @@ def download_spowiki(url):
         comic_soup = BeautifulSoup(comic_html, 'html.parser')
         
     except requests.exceptions.ConnectionError:
-        log("[ERROR] Cannot connect to Spowiki server. Please check your internet connection")
-        log(traceback.format_exc())
+        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "[ERROR] Cannot connect to Spowiki server. Please check your internet connection"))
+        log("[ERROR] (while downloading %s) Cannot connect to Spowiki server" % url)
+        log(format_exc())
         return
     
     try:
@@ -193,6 +185,7 @@ def download_spowiki(url):
         # usually, to save loading time, a comic is fragmented into smaller pieces
         imgs_links = [i.get("src") for i in comic_soup.select("#bo_v_img > a > img")]
         number_of_images = len(imgs_links)
+        images_downloaded = 0
         
         # actual downloading happens here
         ep_name = comic_soup.select_one("#bo_v_title").text.strip()
@@ -203,7 +196,7 @@ def download_spowiki(url):
         
         tasks = []
         for i, image in enumerate(imgs_links):
-            tasks.append(threading.Thread(target=spowiki_image, args=(i, image), name="spowiki_image_download_thread_%s" % i))
+            tasks.append(Thread(target=spowiki_image, args=(i, image), name="spowiki_image_download_thread_%s" % i))
             tasks[i].start()
         
         [i.join() for i in tasks]
@@ -212,20 +205,21 @@ def download_spowiki(url):
         
     except requests.exceptions.MissingSchema:
         print("[ERROR] The given URL link is invalid")
-        print(traceback.format_exc())
+        print(format_exc())
+        return
     
     try:
         ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) Stitching image..." % ep_name))
         log("[INFO] (%s) Stitching image..." % ep_name)
         
         stitch_image(ep_name, ".")
-        shutil.rmtree(ep_name, ignore_errors=True)
+        rmtree(ep_name, ignore_errors=True)
         ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) COMPLETE" % ep_name))
         log("[INFO] (%s) done stitching image..." % ep_name)
     except Exception:
         print()
         print("[ERROR] Error while stitching images")
-        print(traceback.format_exc())
+        print(format_exc())
         pass
 
 
@@ -246,8 +240,7 @@ def naver_image(outfile, referer, image, cmp_no=False):
         result_url_no = res.url.split('&')[-1]
         request_url_no = image.split('&')[-1]
         if result_url_no != request_url_no:
-            print("[ERROR] different url no. (request_url_no: %s, result_url_no: %s), It may be the LAST episode" % (
-            request_url_no, result_url_no))
+            print("[ERROR] different url no. (request_url_no: %s, result_url_no: %s), It may be the LAST episode" % (request_url_no, result_url_no))
             return 1
     
     print("[INFO] downloading: %s" % outfile)
@@ -276,8 +269,8 @@ def naver(title_id, title, episode_start, episode_end, output_dir, best):
         comic_type = CHALLENGE_BEST
     
     for episode in range(episode_start, episode_end + 1):
-        if os.path.isfile(".\\output.output"):
-            os.system("del .\\output.output")
+        if path.isfile(".\\output.output"):
+            system("del .\\output.output")
         
         if comic_type == WEEKLY_WEBTOON:
             print("[INFO] Downloading naver web comic...")
@@ -340,18 +333,18 @@ def parsing_rss(rss):
     idlist = []
     item = False
     
-    if os.path.isfile(".\\out.output"):
-        os.system("del .\\out.output")
+    if path.isfile(".\\out.output"):
+        system("del .\\out.output")
     curl_cmd = "curl -s -o .\\out.output " + rss
-    curl = subprocess.Popen(curl_cmd, shell=True)
+    curl = Popen(curl_cmd, shell=True)
     for i in range(0, 50):  # 5 seconds
-        time.sleep(0.1)
+        sleep(0.1)
         if curl.poll():
             break
     
-    if not os.path.isfile(".\\out.output"):
+    if not path.isfile(".\\out.output"):
         print("[ERROR] Failed download RSS file.")
-        sys.exit(ERR_RSS)
+        return
     
     output_file = open(".\\out.output", "r")
     for line in output_file.readlines():
@@ -382,43 +375,43 @@ def parsing_rss(rss):
 def get_cookie(comic_id):
     cookie = ".\\cookie.jar"
     
-    if os.path.isfile(cookie):
-        os.system("del " + cookie)
+    if path.isfile(cookie):
+        system("del " + cookie)
     
     curl_cmd = "curl -s -o ./out.output --cookie-jar " + cookie + " " + COOKIEURL + comic_id
     
-    curl = subprocess.Popen(curl_cmd, shell=True)
+    curl = Popen(curl_cmd, shell=True)
     
     for i in range(0, 50):  # 5 seconds
-        time.sleep(0.1)
+        sleep(0.1)
         if curl.poll():
             break
     
-    if os.path.getsize(cookie) > 0:
+    if path.getsize(cookie) > 0:
         return cookie
     
     print("[ERROR] Failed get cookie")
-    sys.exit(ERR_COOKIE)
+    return
 
 
 def get_imginfo(comic_id, cookie):
-    if os.path.isfile(".\\out.output"):
-        os.system("del .\\out.output")
+    if path.isfile(".\\out.output"):
+        system("del .\\out.output")
     
     curl_cmd = "curl -s -o .\\out.output --cookie " + cookie + " " + VIEWER + comic_id
-    curl = subprocess.Popen(curl_cmd, shell=True)
+    curl = Popen(curl_cmd, shell=True)
     
     for i in range(0, 50):  # 5 seconds
-        time.sleep(0.1)
+        sleep(0.1)
         if curl.poll():
             break
     
-    if not os.path.isfile(".\\out.output"):
+    if not path.isfile(".\\out.output"):
         print("[ERROR] Failed download page.")
-        sys.exit(ERR_CANNOT_CONNECT_TO_SERVER)
+        return
     
     output_file = open(".\\out.output", "r")
-    comic_dict = json.loads(output_file.read(), encoding="utf8")
+    comic_dict = loads(output_file.read(), encoding="utf8")
     output_file.close()
     
     return comic_dict
@@ -430,7 +423,7 @@ def daum(title, episode_start, episode_end, output_dir):
     
     if len(idlist) < 1:
         print("[ERROR] Not found episode in RSS")
-        sys.exit(ERR_RSS)
+        return
     
     episode = 0
     cookie = None
@@ -453,8 +446,8 @@ def daum(title, episode_start, episode_end, output_dir):
             title = info["title"].encode("euc-kr")
         
         title = title.translate(None, '\\/:*?"<>|').strip()
-        if not os.path.isdir(output_dir + title):
-            os.makedirs(output_dir + title)
+        if not path.isdir(output_dir + title):
+            makedirs(output_dir + title)
         
         # get episode title
         # episode_title = info["episodeTitle"].encode("euc-kr").translate(None, '\\/:*?"<>|').strip()
@@ -474,10 +467,10 @@ def daum(title, episode_start, episode_end, output_dir):
             output_name = "%s%s\\%s_%03d_%03d.jpg" % (output_dir, title, title, episode, sequence)
             wget_cmd = 'wget -O "' + output_name + '" ' + img["url"]  # output_name.decode("euc-kr")
             
-            result = os.system(wget_cmd.encode("euc-kr"))
+            result = system(wget_cmd.encode("euc-kr"))
             if result != 0:
                 print("[ERROR] Failed download")
-                sys.exit(ERR_CANNOT_CONNECT_TO_SERVER)
+                return
             
             img_list.append(output_name)
 
@@ -489,6 +482,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(UiComicDownloaderWindow, self).__init__(*args, **kwargs)
         self.width, self.height = 800, 500
+        self.search_query = ""
         
         self.setObjectName("ComicDownloaderWindow")
         self.setFixedSize(self.width, self.height)
@@ -622,16 +616,19 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.action_log.setText(_translate("ComicDownloaderWindow", "Show Log"))
     
     def btn_push_search_click(self):
-        self.label_error.setText("Searching...")
         # self.btn_push_search.setEnabled(False)
+        if self.search_query == self.text_edit_search.text().strip():
+            self.label_error.setText("That's the same title")
+            return
         
-        search_query = self.text_edit_search.text().strip()
+        self.search_query = self.text_edit_search.text().strip()
         
-        if not search_query:
+        if not self.search_query:
             self.label_error.setText("You haven't entered anything to search")
             return
         
-        self.sig.emit(self.combo_box_source.currentIndex(), search_query)
+        self.label_error.setText("Searching...")
+        self.sig.emit(self.combo_box_source.currentIndex(), self.search_query)
     
     def about_click(self):
         text = "<center>" \
@@ -678,7 +675,7 @@ class SearchThread(QtCore.QThread):
         super(SearchThread, self).__init__(*args, **kwargs)
     
     def go_search(self, mode, comic_query):
-        threading.Thread(target=self.search, args=(mode, comic_query)).start()
+        Thread(target=self.search, args=(mode, comic_query)).start()
     
     def search(self, mode, comic_query):
         final = []
@@ -707,7 +704,7 @@ class SearchThread(QtCore.QThread):
             try:
                 search_result = comic_soup.select('#content > div > ul > li > h5 > a')
             except:
-                log("[ERROR] [%s] %s" % (ERR_NO_SEARCH_RESULT, traceback.format_exc()))
+                log("[ERROR] No search result for %s" % comic_query)
                 return
             
             for i in search_result:
@@ -721,13 +718,13 @@ class SearchThread(QtCore.QThread):
             # incomplete. doesn't work yet
             try:
                 for i in comic_soup.select('#content > table > tbody > tr > td.title > a')[::-1]:
-                    pass
-                    # print('{uri.netloc}'.format(uri=urlparse(link)) + i.get('href'))
+                    print(link + i.get('href'))
             
             except AttributeError:
                 print("[ERROR] No episodes in comic")
-                print(traceback.format_exc())
-                sys.exit(ERR_NO_EPISODE_IN_COMIC)
+                print(format_exc())
+                return
+                
         elif mode == COMIC_TYPE_DAUM:
             pass
         elif mode == COMIC_TYPE_SPOWIKI:
@@ -738,17 +735,17 @@ class SearchThread(QtCore.QThread):
                 comic_html = requests.get(link).text
                 comic_soup = BeautifulSoup(comic_html, 'html.parser')
             except requests.exceptions.ConnectionError:
-                log("[ERROR] Cannot connect to server\n" + traceback.format_exc())
-                self.sig.emit(self.MODE_UPDATE_UI, (self.UI_LABEL_ERROR, "[ERROR] Cannot connect to server"))
-                return ERR_WHILE_REQUITING_DATA
+                log("[ERROR] Cannot connect to spowiki server")
+                self.sig.emit(self.MODE_UPDATE_UI, (self.UI_LABEL_ERROR, "[ERROR] Cannot connect to spowiki server. Check your internet connection"))
+                return
             
             try:
                 comics = [comic.get("href") for comic in comic_soup.find_all("a", attrs={"class", "title"})]
             
             except AttributeError:
                 log("[ERROR] No search result")
-                log(traceback.format_exc())
-                sys.exit(ERR_NO_SEARCH_RESULT)
+                log(format_exc())
+                return
             
             # ########################### get_eps
             try:
@@ -799,13 +796,13 @@ class SearchThread(QtCore.QThread):
                     
                     except AttributeError:
                         print("[ERROR] Error while parsing Spowiki comic")
-                        print(traceback.format_exc())
-                        sys.exit(ERR_WHILE_REQUITING_DATA)
+                        print(format_exc())
+                        return
             
             except AttributeError:
                 print("[ERROR] No episodes in comic")
-                print(traceback.format_exc())
-                sys.exit(ERR_NO_EPISODE_IN_COMIC)
+                print(format_exc())
+                return
         elif mode == COMIC_TYPE_KAKAO:
             pass
         
@@ -836,7 +833,7 @@ class SearchBox(QtWidgets.QLineEdit):
 
 class ScrollMessageBox(QtWidgets.QMessageBox):
     def __init__(self, *args, **kwargs):
-        QtWidgets.QMessageBox.__init__(self, *args, **kwargs)
+        super(ScrollMessageBox, self).__init__(*args, **kwargs)
         scroll = QtWidgets.QScrollArea(self)
         scroll.setWidgetResizable(True)
         
@@ -927,7 +924,7 @@ class ComicGroupBox(QtWidgets.QGroupBox):
         # Browse
         btn_browse = QtWidgets.QPushButton(self)
         btn_browse.setToolTip("View on browser")
-        btn_browse.clicked.connect(self.browse)
+        btn_browse.clicked.connect(lambda: open_new_tab(self.COMIC))
         btn_browse.setFixedSize(40, 40)
         btn_browse_pixmap = QtGui.QPixmap()
         btn_browse_pixmap.loadFromData(QtCore.QByteArray.fromBase64(IMG_BROWSE))
@@ -946,9 +943,6 @@ class ComicGroupBox(QtWidgets.QGroupBox):
         btn_download.setIcon(QtGui.QIcon(btn_download_pixmap))
         btn_download.move(710, 130)
         
-    def browse(self):
-        webbrowser.open_new_tab(self.COMIC)
-        
     def download(self):
         def start_pool():
             pool = ThreadPool(3)
@@ -958,11 +952,11 @@ class ComicGroupBox(QtWidgets.QGroupBox):
             pool.close()
             pool.join()
         
-        threading.Thread(target=start_pool).start()
+        Thread(target=start_pool).start()
         
-        
+
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
+    app = QtWidgets.QApplication([])
     app.setStyle("Fusion")
     
     screen_resolution = app.desktop().screenGeometry()
