@@ -15,7 +15,6 @@ how to make it an executable file:
 # todo: show download progress
 # todo: close all thread when [X] button is clicked
 # todo: yield
-# todo: minimize import
 # todo: add custom save location
 # todo: add nsfw filter
 # todo: add watermark remover
@@ -53,7 +52,6 @@ def log(message):
 log("[INFO] Program Launched")
 
 from multiprocessing.dummy import Pool as ThreadPool
-from os import path, makedirs, system, environ
 from PyQt5 import QtCore, QtGui, QtWidgets
 from webbrowser import open_new_tab
 from traceback import format_exc
@@ -67,7 +65,7 @@ from glob import glob
 from PIL import Image
 import requests
 import sys
-
+import os
 
 log("[INFO] Loaded libraries")
 
@@ -95,12 +93,12 @@ if hasattr(sys, "frozen"):
     
     
     def override_where():
-        return path.abspath("cacert.pem")
+        return os.path.abspath("cacert.pem")
     
     
     import certifi.core
     
-    environ["REQUESTS_CA_BUNDLE"] = override_where()
+    os.environ["REQUESTS_CA_BUNDLE"] = override_where()
     certifi.core.where = override_where
     
     # delay importing until after where() has been replaced
@@ -115,6 +113,9 @@ if hasattr(sys, "frozen"):
 
 def stitch_image(images_path, location):
     try:
+        if not os.path.exists(location):
+            mkdir_smart(location)
+        
         images = natsorted(glob(images_path + '/*.*'))  # get a list of images
         
         XY_value_list = [[Image.open(file).size[0], Image.open(file).size[1]] for file in images]  # get the dimension of all the images
@@ -134,8 +135,8 @@ def stitch_image(images_path, location):
             img_final.paste(Image.open(images[i]), (0, y_offset))  # paste image...
             y_offset += XY_value_list[i][1]  # and increase y offset!
         
-        img_final.save("%s/%s.png" % (location, path), "PNG", quality=100)
-    
+        img_final.save("%s/%s.png" % (location, images_path), "PNG", quality=100)
+        
     except:
         log("[ERROR] Cannot stitch images\n%s" % format_exc())
 
@@ -145,8 +146,8 @@ def mkdir_smart(name):
         A function that creates a directory if it doesn't exists
     """
     try:
-        if not path.isdir(str(name)):
-            makedirs(path.join(str(name)))
+        if not os.path.isdir(str(name)):
+            os.makedirs(os.path.join(str(name)))
             return True
     except OSError:
         return False
@@ -160,10 +161,11 @@ def download_spowiki(url):
     """
     
     def spowiki_image(i, image_url):
-        print("%s / %s" % (images_downloaded, number_of_images))
-        img = requests.get(image_url, headers=headers).content  # get image
-        open(ep_name + "/" + str(i + 1) + ".jpg", "wb").write(img)  # write image
-        images_downloaded += 1
+        try:
+            img = requests.get(image_url, headers=headers).content  # get image
+            open(ep_name + "/" + str(i + 1) + ".jpg", "wb").write(img)  # write image
+        except requests.exceptions.ConnectionError:
+            spowiki_image(i, image_url)
         
     log("[INFO] Downloading: %s" % url)
     
@@ -184,12 +186,10 @@ def download_spowiki(url):
         # acquire list of urls of each image that composes the entire comic
         # usually, to save loading time, a comic is fragmented into smaller pieces
         imgs_links = [i.get("src") for i in comic_soup.select("#bo_v_img > a > img")]
-        number_of_images = len(imgs_links)
-        images_downloaded = 0
         
         # actual downloading happens here
         ep_name = comic_soup.select_one("#bo_v_title").text.strip()
-        mkdir_smart(ep_name)  # create directory where the comic will be saved
+        mkdir_smart("comics/" + ep_name)  # create directory where the comic will be saved
 
         ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) Downloading images..." % ep_name))
         log("[INFO] (%s) downloading images..." % ep_name)
@@ -212,8 +212,8 @@ def download_spowiki(url):
         ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) Stitching image..." % ep_name))
         log("[INFO] (%s) Stitching image..." % ep_name)
         
-        stitch_image(ep_name, ".")
-        rmtree(ep_name, ignore_errors=True)
+        stitch_image("comics/" + ep_name, "comics/")
+        rmtree("comics/" + ep_name, ignore_errors=True)
         ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) COMPLETE" % ep_name))
         log("[INFO] (%s) done stitching image..." % ep_name)
     except Exception:
@@ -269,8 +269,8 @@ def naver(title_id, title, episode_start, episode_end, output_dir, best):
         comic_type = CHALLENGE_BEST
     
     for episode in range(episode_start, episode_end + 1):
-        if path.isfile(".\\output.output"):
-            system("del .\\output.output")
+        if os.path.isfile(".\\output.output"):
+            os.system("del .\\output.output")
         
         if comic_type == WEEKLY_WEBTOON:
             print("[INFO] Downloading naver web comic...")
@@ -333,8 +333,8 @@ def parsing_rss(rss):
     idlist = []
     item = False
     
-    if path.isfile(".\\out.output"):
-        system("del .\\out.output")
+    if os.path.isfile(".\\out.output"):
+        os.system("del .\\out.output")
     curl_cmd = "curl -s -o .\\out.output " + rss
     curl = Popen(curl_cmd, shell=True)
     for i in range(0, 50):  # 5 seconds
@@ -342,7 +342,7 @@ def parsing_rss(rss):
         if curl.poll():
             break
     
-    if not path.isfile(".\\out.output"):
+    if not os.path.isfile(".\\out.output"):
         print("[ERROR] Failed download RSS file.")
         return
     
@@ -375,8 +375,8 @@ def parsing_rss(rss):
 def get_cookie(comic_id):
     cookie = ".\\cookie.jar"
     
-    if path.isfile(cookie):
-        system("del " + cookie)
+    if os.path.isfile(cookie):
+        os.system("del " + cookie)
     
     curl_cmd = "curl -s -o ./out.output --cookie-jar " + cookie + " " + COOKIEURL + comic_id
     
@@ -387,7 +387,7 @@ def get_cookie(comic_id):
         if curl.poll():
             break
     
-    if path.getsize(cookie) > 0:
+    if os.path.getsize(cookie) > 0:
         return cookie
     
     print("[ERROR] Failed get cookie")
@@ -395,8 +395,8 @@ def get_cookie(comic_id):
 
 
 def get_imginfo(comic_id, cookie):
-    if path.isfile(".\\out.output"):
-        system("del .\\out.output")
+    if os.path.isfile(".\\out.output"):
+        os.system("del .\\out.output")
     
     curl_cmd = "curl -s -o .\\out.output --cookie " + cookie + " " + VIEWER + comic_id
     curl = Popen(curl_cmd, shell=True)
@@ -406,7 +406,7 @@ def get_imginfo(comic_id, cookie):
         if curl.poll():
             break
     
-    if not path.isfile(".\\out.output"):
+    if not os.path.isfile(".\\out.output"):
         print("[ERROR] Failed download page.")
         return
     
@@ -446,8 +446,8 @@ def daum(title, episode_start, episode_end, output_dir):
             title = info["title"].encode("euc-kr")
         
         title = title.translate(None, '\\/:*?"<>|').strip()
-        if not path.isdir(output_dir + title):
-            makedirs(output_dir + title)
+        if not os.path.isdir(output_dir + title):
+            os.makedirs(output_dir + title)
         
         # get episode title
         # episode_title = info["episodeTitle"].encode("euc-kr").translate(None, '\\/:*?"<>|').strip()
@@ -467,7 +467,7 @@ def daum(title, episode_start, episode_end, output_dir):
             output_name = "%s%s\\%s_%03d_%03d.jpg" % (output_dir, title, title, episode, sequence)
             wget_cmd = 'wget -O "' + output_name + '" ' + img["url"]  # output_name.decode("euc-kr")
             
-            result = system(wget_cmd.encode("euc-kr"))
+            result = os.system(wget_cmd.encode("euc-kr"))
             if result != 0:
                 print("[ERROR] Failed download")
                 return
@@ -634,7 +634,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         text = "<center>" \
                "<h1>Comic Downloader</h1>" \
                "</center>" \
-               "Version: v4-alpha<br>" \
+               "Version: " + __version__ + "<br>" \
                "Release date: 2019 October 1<br>" \
                "Copyright: CC-BY 4.0 &copy; AnonymousPomp<br>" \
                "Email: anonymouspomp@gmail.com<br>" \
