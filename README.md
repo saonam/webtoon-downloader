@@ -1,26 +1,39 @@
->Read Documentation in [Korean](https://github.com/AnonymousPomp/Comic-Downloader/blob/master/README_KR.md) ([한국어](https://github.com/AnonymousPomp/Comic-Downloader/blob/master/README_KR.md)로 도큐멘테이션 읽기)
-
 # Comic Downloader
-
-> ## [Download Page](https://github.com/AnonymousPomp/Comic-Downloader/releases/)
-
 This is a program that downloads Korean webcomics from various sources.
 
-The program is still in alpha version (in development), so some part of the program may not be working properly.
+The program is still in alpha version (in development), so some part of the program may not be working properly, and features might be added and removed very rapidly.
 
 downloading takes from 10 second up to 100 second or more per episode depending on your internet connection and the length of the comic.
 
-# Installation
-## Windows
-You can go to [Download Page](https://github.com/AnonymousPomp/Comic-Downloader/releases/) and download the latest version by clicking on "Assets" and downlaoding the zip file that contains all the data.
+>This documentation assumes taht you have the following knowledge:
+>- Basic knowledge of python
+>- Basic knowledge of terminal (bash, shell, cmd, etc.)
+>- Basic knowledge of VCS(version control system) (git)
 
-## Linux
+# Installation
+> This project requires python 3 installed
+
+There are two ways to run the program. You can either compile the code into and executable file, or just run the code directly. The only difference is that compiled program takes up more space, and that it requires `cecert.pem` file to run. Compiled script usually takes up 370MB or more of the storage depending on the libraries installed. This is the reason why I decided not to upload the executable file. Its faster to compile it than to download it.
+
+
+### Compile
 1.) Clone the repository `git clone https://github.com/AnonymousPomp/Comic-Downloader.git`<br>
-2.) Navigate to where the source code is located `cd Comic-Downloader/source`<br>
-3.) compile the program by running `pyinstaller --onefile --windowed --icon=icons8-pluto-dwarf-planet-48.png ComicDownloader.py --hidden-import=queue`
-or you can execute the script directly by typing `python ComicDownloader.py` (recommended). If you're running the script directly, you may delete all other files including images.
+2.) Navigate to where the source code is located `cd Comic-Downloader`<br>
+3.) Install python compiler `pip install PyInstaller`<br>
+3.) compile `pyinstaller --onefile --windowed --icon=icon.png ComicDownloader.py --hidden-import=queue`<br>
+4.) once compiled, icon.png can be deleted but you should keep cecert.pem.<br>
+
+### Running directly (recommended)
+1.) `python ComicDownloader.py`<br>
+2.) If you're running the script directly, you may delete all other files including icon.png and cecert.pem<br>
+
 
 # Warning
+>This Project is protected by [CC BY License 4.0](https://creativecommons.org/licenses/by/4.0/)
+>
+>You are allowed to distribute, remix, tweak, and build up on the project, even commercially, as long as you put a credit for the original creation.
+You can find more information [Here](https://en.wikipedia.org/wiki/Creative_Commons_license#Types_of_licenses)
+
 >**I have no responsibility over what you do with my program**
 
 >Downloading web comic for commercial use is illegal, and punishable by law. Please download the comics **for personal use ONLY**.
@@ -33,19 +46,7 @@ or you can execute the script directly by typing `python ComicDownloader.py` (re
 
 >All comics include watermarks. A watermark remover will be added in the near future
 
-# For Developers
->All information from this point on are for developers who want to build upon my program. Ordinary users don't necessarily have to read it.
-
->This documentation assumes taht you have the following knowledge:
->- Intermediate knowledge about python
->- Basic knowledge about terminal (bash, shell, cmd, etc.)
->- Basic knowledge about VCS(version control system) (git)
-
->This Project is protected by [CC BY License 4.0](https://creativecommons.org/licenses/by/4.0/)
->
->You are allowed to distribute, remix, tweak, and build up on the project, even commercially, as long as you put a credit for the original creation.
-You can find more information [Here](https://en.wikipedia.org/wiki/Creative_Commons_license#Types_of_licenses)
-
+# More information
 Development Environment:
 - Programming Language: [Python 3.6.9](https://www.python.org)
 - Designer: [Qt Designer](https://doc.qt.io/qt-5/qtdesigner-manual.html)
