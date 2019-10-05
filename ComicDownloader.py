@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-how to make it an executable file:
-    pyinstaller --onefile --windowed --icon=icons8-pluto-dwarf-planet-48.png ComicDownloader.py --hidden-import=queue
-
 # todo: fix error management
 # todo: remove print (replace it with log())
 # todo: make log window sizable
@@ -29,7 +25,6 @@ how to make it an executable file:
 # todo: add update checker
 # todo: show time taken to download
 # todo: check if images_downloaded works
-"""
 
 __version__ = "v4-alpha"
 
