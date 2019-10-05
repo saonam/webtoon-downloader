@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -52,7 +51,7 @@ def log(message):
 log("[INFO] Program Launched")
 
 from multiprocessing.dummy import Pool as ThreadPool
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from webbrowser import open_new_tab
 from traceback import format_exc
 from natsort import natsorted
@@ -135,7 +134,7 @@ def stitch_image(images_path, location):
             img_final.paste(Image.open(images[i]), (0, y_offset))  # paste image...
             y_offset += XY_value_list[i][1]  # and increase y offset!
         
-        img_final.save("%s/%s.png" % (location, images_path), "PNG", quality=100)
+        img_final.save("%s.png" % images_path, "PNG", quality=100)
         
     except:
         log("[ERROR] Cannot stitch images\n%s" % format_exc())
@@ -163,7 +162,12 @@ def download_spowiki(url):
     def spowiki_image(i, image_url):
         try:
             img = requests.get(image_url, headers=headers).content  # get image
-            open(ep_name + "/" + str(i + 1) + ".jpg", "wb").write(img)  # write image
+            
+            if image_url[-3:-1] == "pn":
+                open("comics/%s/%s.png" % (ep_name, str(i + 1)), "wb").write(img)  # write image
+            else:
+                open("comics/%s/%s.jpg" % (ep_name, str(i + 1)), "wb").write(img)  # write image
+        
         except requests.exceptions.ConnectionError:
             spowiki_image(i, image_url)
         
@@ -478,11 +482,11 @@ def daum(title, episode_start, episode_end, output_dir):
 ###############################################################################
 class UiComicDownloaderWindow(QtWidgets.QMainWindow):
     sig = QtCore.pyqtSignal(int, str)
+    search_query = ""
     
     def __init__(self, *args, **kwargs):
         super(UiComicDownloaderWindow, self).__init__(*args, **kwargs)
         self.width, self.height = 800, 500
-        self.search_query = ""
         
         self.setObjectName("ComicDownloaderWindow")
         self.setFixedSize(self.width, self.height)
@@ -599,14 +603,14 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.sig.connect(self.search_thread.go_search)
         
         self.search_thread.start()
-    
+        
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.combo_box_source.addItem("Spowiki")
         # self.combo_box_source.addItem("Naver")
         # self.combo_box_source.addItem("Daum")
         # self.combo_box_source.addItem("Kakao")
-        
+    
         self.tab_widget_main.setTabText(self.tab_widget_main.indexOf(self.tab_search),
                                         _translate("ComicDownloaderWindow", "Search"))
         self.tab_widget_main.setTabText(self.tab_widget_main.indexOf(self.tab_downloads),
@@ -614,7 +618,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         self.menu_tools.setTitle(_translate("ComicDownloaderWindow", "Tools"))
         self.action_about.setText(_translate("ComicDownloaderWindow", "About"))
         self.action_log.setText(_translate("ComicDownloaderWindow", "Show Log"))
-    
+        
     def btn_push_search_click(self):
         # self.btn_push_search.setEnabled(False)
         if self.search_query == self.text_edit_search.text().strip():
@@ -823,6 +827,10 @@ class SearchThread(QtCore.QThread):
 class SearchBox(QtWidgets.QLineEdit):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setToolTip("Search")
+        self.setPlaceholderText("Search")
+        self.setGeometry(QtCore.QRect(150, 0, 600, 30))
+        self.setObjectName("text_edit_search")
     
     def keyPressEvent(self, qKeyEvent):
         if qKeyEvent.key() == QtCore.Qt.Key_Return:
@@ -954,6 +962,14 @@ class ComicGroupBox(QtWidgets.QGroupBox):
         
         Thread(target=start_pool).start()
         
+
+class IconFromBase64(QtGui.QIcon):
+    def __init__(self, logo_base64, *args, **kwargs):
+        super(IconFromBase64, self).__init__(*args, **kwargs)
+        self.icon_pixmap = QtGui.QPixmap()
+        self.icon_pixmap.loadFromData(QtCore.QByteArray.fromBase64(logo_base64))
+        self.addPixmap(self.icon_pixmap, QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
