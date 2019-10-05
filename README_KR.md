@@ -1,4 +1,4 @@
->Read Documentation in [English](https://github.com/AnonymousPomp/Comic-Downloader/blob/master/README.md) ([영어](https://github.com/AnonymousPomp/Comic-Downloader/blob/master/README.md)로 도큐멘테이션 읽기)
+>Read Documentation in [English](https://github.com/AnonymousPomp/Comic-Downloader) ([영어](https://github.com/AnonymousPomp/Comic-Downloader)로 도큐멘테이션 읽기)
 
 # 웹툰 다운로더
 > ## [다운로드 페이지](https://github.com/AnonymousPomp/Comic-Downloader/releases/)

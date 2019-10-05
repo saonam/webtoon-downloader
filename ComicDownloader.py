@@ -25,6 +25,7 @@
 # todo: add update checker
 # todo: show time taken to download
 # todo: check if images_downloaded works
+# todo: "START" and "END" keyword
 
 __version__ = "v4-alpha"
 
@@ -46,7 +47,7 @@ def log(message):
 log("[INFO] Program Launched")
 
 from multiprocessing.dummy import Pool as ThreadPool
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets
 from webbrowser import open_new_tab
 from traceback import format_exc
 from natsort import natsorted
