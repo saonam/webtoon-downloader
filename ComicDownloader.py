@@ -9,23 +9,21 @@
 # todo: update documentation
 # todo: show download progress
 # todo: close all thread when [X] button is clicked
-# todo: yield
+# todo: yield, assert
 # todo: add custom save location
-# todo: add nsfw filter
-# todo: add watermark remover
+# todo: add nsfw indicator
 # todo: parallelize search
 # todo: show download progress in UI
 # todo: put as many multiprocessing as possible
-# todo: download in "comics/" directory
 # todo: show downloaded  comics
 # todo: add tutorial mode
 # todo: make data_save file (pkl)
 # todo: disable searching when the program is already searching
 # todo: add "read" button to downloaded comics
-# todo: add update checker
 # todo: show time taken to download
 # todo: check if images_downloaded works
 # todo: "START" and "END" keyword
+# todo: remove spowiki
 
 __version__ = "v4-alpha"
 
@@ -64,11 +62,10 @@ import os
 
 log("[INFO] Loaded libraries")
 
-COMIC_TYPE_SPOWIKI = 0
-COMIC_TYPE_NAVER = 1
-COMIC_TYPE_NAVER_BEST_CHALLENGE = 2
-COMIC_TYPE_DAUM = 3
-COMIC_TYPE_KAKAO = 4
+COMIC_TYPE_NAVER = 0
+COMIC_TYPE_NAVER_BEST_CHALLENGE = 1
+COMIC_TYPE_DAUM = 2
+COMIC_TYPE_KAKAO = 3
 
 IMG_DOWNLOAD = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAA8FBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmRfStAAAAT3RSTlMAAQQICQoLDBIXHCAhJCcoKiwtLi8xMjM0Njg7PD5DREVOT1ldYmNncHFzd3iChYaIj5SVl5ibnqCipbC1t8PHyM7R1drc4OTo6fX3+fv9YEV6XQAAAOVJREFUGBnVwddWwkAARdETldgbYyzYFbFXxK6IWBCE+/9/IziZSVjIu+7NXxIsXVTr1dNp+hh/k1Ue4Tc5eV8T9BpTSiOkR0Vp1wP5u6scKZPqVldbicSerN0wDAty1vBuZEWAkfOA9ygrAoycCrFguyUrAoycE6zgXk4EGDn5gB/H8iLAyKvN0TYq68AYMwQMGmP2FVsFDmXtkCgo1hyGF8U2cbbkHUFDzjrWhhI1eJW3TMeK0gLOlVgAFpXWhKxSZsmqyy3wpETrrKUuM0DmU30V6cg8q49igDVfelePj8sp/otvn/iK48fNmCQAAAAASUVORK5CYII="
 IMG_SEARCH = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABCFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzxr8JAAAAV3RSTlMAAQIDBAYHCw4PERMUGBseIyQmKCksLjEzNDU3ODo7PENGR05PUFRXW11kZnBxdXd/gIKDkZ2eoKWor7C0t7m8xcfIyszO0dPV19re4OTm6evt7/H19/ntlmEiAAABOElEQVQYGX3BCSMCURgF0DtTTSghITuh7OtESnYKjWSZ+///ie89NUs1zoFnbP34sl45Wk1iqJlH9tQyGDB6w6ByAmG5b4a10gia5QA3Dd/YD5XXwoiJWKrUodJKwPNEZcfAn9gplTJ6lqjMw7dNJYOuFkURQWcUNfyZoLhHSKxDkYS2SzGHsBLFKrQqRRxhKYojaA7JNvrEKCrQXJJ36EdRh9Ym6aCPSXEB7ZrCRNgIxQm0A4oswgoUa9ByFFWEGK8UKWjGF0UeQTsUj+jaonDH4Vugsowu06Fw8+gpUrmFZ5JaNWsCiM89UDuHb5Ndzt0HPTZ8mxzGhm/SYVDzhYoNn7HxyZ73DcNqUrERYEzv19vu29XelAHAalKxEclqULERyWpQWUEkq0FxgGjWM8kc/hE/rCziF8m9fWG4iWOGAAAAAElFTkSuQmCC"
@@ -149,36 +146,59 @@ def mkdir_smart(name):
 
 
 ###############################################################################
-# Spowiki
-def download_spowiki(url):
+# Naver
+WEEKLY_WEBTOON = 1
+CHALLENGE_BEST = 2
+
+
+# todo: combine spowiki with naver
+def download_naver(url):  # (title_id, title, episode_start, episode_end, output_dir, best):
     """
-        A function that downloads a episode of comic from https://tv.spowiki.com/
+            A function that downloads a episode of comic from https://comic.naver.com
     """
-    
-    def spowiki_image(i, image_url):
+
+    def naver_image(i, image_url):
+        outfile, referer, image, cmp_no = None, None, None, False
+        
         try:
-            img = requests.get(image_url, headers=headers).content  # get image
+            res = requests.get(image_url, headers=headers)  # get image
+            img = res.content
             
-            if image_url[-3:-1] == "pn":
-                open("comics/%s/%s.png" % (ep_name, str(i + 1)), "wb").write(img)  # write image
-            else:
-                open("comics/%s/%s.jpg" % (ep_name, str(i + 1)), "wb").write(img)  # write image
-        
+            if res.status_code != 200:
+                # todo: when exit code is not 200
+                print(res.status_code, res.content)
+                return
+            
+            with open(("comics/%s/%s.png" if image_url[-3:-1] == "pn" else "comics/%s/%s.jpg") % (ep_name, str(i + 1)), "wb") as file:  # write image
+                file.write(img)
         except requests.exceptions.ConnectionError:
-            spowiki_image(i, image_url)
+            naver_image(i, image_url)
         
+        if cmp_no:
+            result_url_no = res.url.split('&')[-1]
+            request_url_no = image.split('&')[-1]
+            if result_url_no != request_url_no:
+                print(
+                    "[ERROR] different url no. (request_url_no: %s, result_url_no: %s), It may be the LAST episode" % (
+                    request_url_no, result_url_no))
+                return 1
+    
     log("[INFO] Downloading: %s" % url)
+
+    print("nope")
+    return
     
     try:
-        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "Loading comic (it may take a while)..."))
+        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI,
+                                            (SearchThread.UI_LABEL_ERROR, "Loading comic (it may take a while)..."))
         log("[INFO] Loading comic...")
-        
+    
         comic_html = requests.get(url, headers=headers).content
         comic_soup = BeautifulSoup(comic_html, 'html.parser')
-        
     except requests.exceptions.ConnectionError:
-        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "[ERROR] Cannot connect to Spowiki server. Please check your internet connection"))
-        log("[ERROR] (while downloading %s) Cannot connect to Spowiki server" % url)
+        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (
+        SearchThread.UI_LABEL_ERROR, "[ERROR] Cannot connect to Naver server. Please check your internet connection"))
+        log("[ERROR] (while downloading %s) Cannot connect to Naver server" % url)
         log(format_exc())
         return
     
@@ -186,70 +206,46 @@ def download_spowiki(url):
         # acquire list of urls of each image that composes the entire comic
         # usually, to save loading time, a comic is fragmented into smaller pieces
         imgs_links = [i.get("src") for i in comic_soup.select("#bo_v_img > a > img")]
-        
+    
         # actual downloading happens here
         ep_name = comic_soup.select_one("#bo_v_title").text.strip()
         mkdir_smart("comics/" + ep_name)  # create directory where the comic will be saved
-
-        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) Downloading images..." % ep_name))
+    
+        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI,
+                                            (SearchThread.UI_LABEL_ERROR, "(%s) Downloading images..." % ep_name))
         log("[INFO] (%s) downloading images..." % ep_name)
-        
+    
         tasks = []
         for i, image in enumerate(imgs_links):
             tasks.append(Thread(target=spowiki_image, args=(i, image), name="spowiki_image_download_thread_%s" % i))
             tasks[i].start()
-        
+    
         [i.join() for i in tasks]
-        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) Downloading images...COMPLETE" % ep_name))
+        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (
+        SearchThread.UI_LABEL_ERROR, "(%s) Downloading images...COMPLETE" % ep_name))
         log("[INFO] (%s) done downloading images" % ep_name)
-        
     except requests.exceptions.MissingSchema:
         print("[ERROR] The given URL link is invalid")
         print(format_exc())
         return
     
     try:
-        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) Stitching image..." % ep_name))
+        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI,
+                                            (SearchThread.UI_LABEL_ERROR, "(%s) Stitching image..." % ep_name))
         log("[INFO] (%s) Stitching image..." % ep_name)
-        
+    
         stitch_image("comics/" + ep_name, "comics/")
         rmtree("comics/" + ep_name, ignore_errors=True)
-        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI, (SearchThread.UI_LABEL_ERROR, "(%s) COMPLETE" % ep_name))
+        ComicDownloader.search_thread_catch(SearchThread.MODE_UPDATE_UI,
+                                            (SearchThread.UI_LABEL_ERROR, "(%s) COMPLETE" % ep_name))
         log("[INFO] (%s) done stitching image..." % ep_name)
-    except Exception:
+    except:
         print()
         print("[ERROR] Error while stitching images")
         print(format_exc())
         pass
-
-
-###############################################################################
-# Naver
-WEEKLY_WEBTOON = 1
-CHALLENGE_BEST = 2
-
-
-def naver_image(outfile, referer, image, cmp_no=False):
-    res = requests.get(image, headers={'Referer': referer})
     
-    if res.status_code != 200:
-        print("[ERROR] response code = %d, content: %s" % (res.status_code, res.content))
-        return 1
-    
-    if cmp_no:
-        result_url_no = res.url.split('&')[-1]
-        request_url_no = image.split('&')[-1]
-        if result_url_no != request_url_no:
-            print("[ERROR] different url no. (request_url_no: %s, result_url_no: %s), It may be the LAST episode" % (request_url_no, result_url_no))
-            return 1
-    
-    print("[INFO] downloading: %s" % outfile)
-    with open(outfile, "wb") as f:
-        f.write(res.content)
-    return 0
-
-
-def naver(title_id, title, episode_start, episode_end, output_dir, best):
+    title_id, title, episode_start, episode_end, output_dir, best = None, None, None, None, None, None
     if title is None:
         title = ""
     
@@ -481,6 +477,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
     search_query = ""
     
     def __init__(self, *args, **kwargs):
+        # todo: add update checker
         super(UiComicDownloaderWindow, self).__init__(*args, **kwargs)
         self.width, self.height = 800, 500
         
@@ -492,11 +489,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
         self.setWindowTitle("Comic Downloader")
-        pixmap = QtGui.QPixmap()
-        pixmap.loadFromData(QtCore.QByteArray.fromBase64(IMG_LOGO_48))
-        icon = QtGui.QIcon()
-        icon.addPixmap(pixmap, QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.setWindowIcon(icon)
+        self.setWindowIcon(IconFromBase64(IMG_LOGO_48))
         self.centralWidget = QtWidgets.QWidget(self)
         self.centralWidget.setObjectName("centralWidget")
         self.tab_widget_main = QtWidgets.QTabWidget(self.centralWidget)
@@ -508,11 +501,11 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         # Scroll Area
         #
         self.scroll_area_results = QtWidgets.QScrollArea(self.tab_search)
-        self.scroll_area_results.setGeometry(QtCore.QRect(-1, 60, 801, 390))
+        self.scroll_area_results.setGeometry(QtCore.QRect(0, 60, 801, 390))
         self.scroll_area_results.setWidgetResizable(True)
         
         self.widget_results_scroll = QtWidgets.QWidget()
-        self.widget_results_scroll.setGeometry(QtCore.QRect(0, 0, 799, 388))
+        self.widget_results_scroll.setGeometry(QtCore.QRect(0, 0, 800, 388))
         self.widget_results_scroll.setObjectName("widget_results_scroll")
         self.scroll_area_results.setWidget(self.widget_results_scroll)
         self.v_box_layout_results = QtWidgets.QVBoxLayout(self.widget_results_scroll)
@@ -544,11 +537,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         sizePolicy.setHeightForWidth(self.btn_push_search.sizePolicy().hasHeightForWidth())
         self.btn_push_search.setSizePolicy(sizePolicy)
         self.btn_push_search.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        pixmap1 = QtGui.QPixmap()
-        pixmap1.loadFromData(QtCore.QByteArray.fromBase64(IMG_SEARCH))
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(pixmap1, QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_push_search.setIcon(icon1)
+        self.btn_push_search.setIcon(IconFromBase64(IMG_SEARCH))
         self.btn_push_search.setIconSize(QtCore.QSize(24, 24))
         self.btn_push_search.setFlat(False)
         self.btn_push_search.setObjectName("btn_push_search")
@@ -602,11 +591,11 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
         
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.combo_box_source.addItem("Spowiki")
-        # self.combo_box_source.addItem("Naver")
-        # self.combo_box_source.addItem("Daum")
-        # self.combo_box_source.addItem("Kakao")
-    
+        self.combo_box_source.addItem("Naver")
+        self.combo_box_source.addItem("Naver Best Challenge")
+        self.combo_box_source.addItem("Daum")
+        self.combo_box_source.addItem("Kakao")
+
         self.tab_widget_main.setTabText(self.tab_widget_main.indexOf(self.tab_search),
                                         _translate("ComicDownloaderWindow", "Search"))
         self.tab_widget_main.setTabText(self.tab_widget_main.indexOf(self.tab_downloads),
@@ -679,6 +668,15 @@ class SearchThread(QtCore.QThread):
     
     def search(self, mode, comic_query):
         final = []
+        # type
+        # title
+        # titleId
+        # comic URL
+        # synopsis
+        # author
+        # latest update
+        # number of episodes
+        # thumbnail image link
         
         if mode == COMIC_TYPE_NAVER:
             source = "naver"
@@ -686,125 +684,122 @@ class SearchThread(QtCore.QThread):
             source = "naver best challenge"
         elif mode == COMIC_TYPE_DAUM:
             source = "daum"
-        elif mode == COMIC_TYPE_SPOWIKI:
-            source = "spowiki"
         elif mode == COMIC_TYPE_KAKAO:
             source = "kakao"
         else:
             source = "undefined"
         
         log("[INFO] Searching for: \"%s\" on %s" % (comic_query, source))
+        comics = []
         
+        # Downloading
         if mode == COMIC_TYPE_NAVER or mode == COMIC_TYPE_NAVER_BEST_CHALLENGE:
-            link = 'https://comic.naver.com/search.nhn?keyword={0}'.format(comic_query)
-            
-            comic_html = requests.get(link).text
-            comic_soup = BeautifulSoup(comic_html, 'html.parser')
-            
-            try:
-                search_result = comic_soup.select('#content > div > ul > li > h5 > a')
-            except:
-                log("[ERROR] No search result for %s" % comic_query)
-                return
-            
-            for i in search_result:
-                url = str(i.get('href'))
-                if '://' in url:
-                    final.append(url)
-                else:
-                    pass
-                    # final.append('{uri.netloc}'.format(uri=urlparse(link)) + url)
-            # ################## get_eps
-            # incomplete. doesn't work yet
-            try:
-                for i in comic_soup.select('#content > table > tbody > tr > td.title > a')[::-1]:
-                    print(link + i.get('href'))
-            
-            except AttributeError:
-                print("[ERROR] No episodes in comic")
-                print(format_exc())
-                return
-                
-        elif mode == COMIC_TYPE_DAUM:
-            pass
-        elif mode == COMIC_TYPE_SPOWIKI:
-            link = "https://tv.spowiki.com/bbs/board.php?bo_table=webtoon&wt_title=" + requests.utils.requote_uri(
-                comic_query.strip())
+            # todo: separate naver nad naver_bc
+            link = 'https://comic.naver.com/search.nhn?keyword=' + requests.utils.requote_uri(comic_query.strip())
             
             try:
                 comic_html = requests.get(link).text
                 comic_soup = BeautifulSoup(comic_html, 'html.parser')
             except requests.exceptions.ConnectionError:
-                log("[ERROR] Cannot connect to spowiki server")
-                self.sig.emit(self.MODE_UPDATE_UI, (self.UI_LABEL_ERROR, "[ERROR] Cannot connect to spowiki server. Check your internet connection"))
+                log("[ERROR] Cannot connect to naver server")
+                self.sig.emit(self.MODE_UPDATE_UI, (
+                self.UI_LABEL_ERROR, "[ERROR] Cannot connect to naver server. Please check your internet connection"))
                 return
             
             try:
-                comics = [comic.get("href") for comic in comic_soup.find_all("a", attrs={"class", "title"})]
-            
+                comics_raw = [comic.get("href") for comic in comic_soup.select('#content > div > ul > li > h5 > a')]
+                
+                if mode == COMIC_TYPE_NAVER:
+                    comics.append([i for i in comics_raw if i.startswith("/webtoon/list.nhn")])
+                if mode == COMIC_TYPE_NAVER_BEST_CHALLENGE:
+                    comics.append([i for i in comics_raw if i.startswith("/bestChallenge")])
+                # comics.append([i for i in comics_raw if i.startswith("/challenge")])
+                # todo: download series
+                # comics.append([i for i in comics_raw if i.startswith("https://series.naver.com/comic/")])
+                # comics.append([i for i in comics_raw if i.startswith("https://series.naver.com/novel/")])
             except AttributeError:
-                log("[ERROR] No search result")
+                log("[ERROR] No search result for \"%s\"" % comic_query)
                 log(format_exc())
                 return
             
-            # ########################### get_eps
             try:
                 suffix = " comic"
-                number_of_comics = len(comics)
+                number_of_comics = sum(len(x) for x in comics)
                 if number_of_comics > 1:
                     suffix += "s"
                 suffix += "..."
                 
-                for i in range(len(comics)):
-                    self.sig.emit(self.MODE_UPDATE_UI,
-                                  (self.UI_LABEL_ERROR, "parsing [%s/%s] %s" % (i, number_of_comics, suffix)))
-                    
-                    final.append(list())
-                    
-                    comic_html = requests.get(comics[i])
-                    comic_soup = BeautifulSoup(comic_html.text, "html.parser")
-                    
-                    episodes = [episode.get("href") for episode in
-                                comic_soup.select("#fboardlist > div > table.bt-table > tbody > tr > td > a")[::-1]]
-                    
-                    try:
-                        # title
-                        title = comic_soup.select_one("#wt_view > div.explain > h2 > a").text
+                parse_index = 0
+                for comic_type_index in range(len(comics)):
+                    for comic_url_index in range(len(comics[comic_type_index])):
+                        parse_index += 1
+                        self.sig.emit(self.MODE_UPDATE_UI, (self.UI_LABEL_ERROR, "parsing [%s/%s] %s" % (parse_index, number_of_comics, suffix)))
                         
-                        final[i].append(episodes)
+                        final.append(list())
                         
-                        final[i].append(title)
+                        # type
+                        final[comic_type_index].append(COMIC_TYPE_NAVER)
                         
-                        # comic URL
-                        final[i].append(comics[i])
+                        if comic_type_index == 0:
+                            page_url = 'https://comic.naver.com/webtoon/list.nhn?titleId=%s' % comics[comic_type_index][comic_url_index][-6:]
+                        elif comic_type_index == 1:
+                            page_url = 'https://comic.naver.com/bestChallenge/list.nhn?titleId=%s' % comics[comic_type_index][comic_url_index][-6:]
+                        elif comic_type_index == 2:
+                            page_url = 'https://comic.naver.com/challenge/list.nhn?titleId=%s' % comics[comic_type_index][comic_url_index][-6:]
+                        else:
+                            print("WTF??")
+                            return
                         
-                        # synopsis
-                        final[i].append(comic_soup.select_one("#wt_view > div.overview").text.strip())
+                        # page_url += "&no=" % episode
+                        comic_html = requests.get(page_url)
+                        comic_soup = BeautifulSoup(comic_html.text, "html.parser")
                         
-                        # author
-                        final[i].append(comic_soup.select_one("dl.summ > dd:nth-child(2)").text)
-                        
-                        # latest update
-                        final[i].append(comic_soup.select_one(
-                            "#fboardlist > div:nth-child(10) > table > tbody > tr:nth-child(1) > td.td_date").text)
-                        
-                        # number of episodes
-                        final[i].append(len(episodes))
-                        
-                        # thumbnail image link
-                        final[i].append(comic_soup.select_one("#wt_view > div.thumb > a > img").get("src"))
-                    
-                    except AttributeError:
-                        print("[ERROR] Error while parsing Spowiki comic")
-                        print(format_exc())
-                        return
-            
+                        try:
+                            # title
+                            final[comic_type_index].append(comic_soup.find("meta", attrs={"property": "og:title"}).get("content"))
+                            
+                            # titleId
+                            final[comic_type_index].append(comics[comic_type_index][comic_url_index][-6:])
+                            
+                            # comic URL
+                            final[comic_type_index].append(page_url)
+                            
+                            # synopsis
+                            final[comic_type_index].append(str(comic_soup.select_one("#content > div.comicinfo > div.detail > p:nth-child(2)")).replace("<br/>", "\n").replace("<p>", "").replace("</p>", ""))
+                            
+                            # author
+                            final[comic_type_index].append(comic_soup.select_one("#content > div.comicinfo > div.detail > h2 > span").text.strip())
+                            
+                            # latest update
+                            # final[comic_type_index].append(comic_soup.select_one("#content > table > tbody > tr:nth-child(3) > td.num").text)
+                            final[comic_type_index].append(None)
+                            
+                            # number of episodes
+                            # final[comic_type_index].append(int(comic_soup.select_one("#comicRemocon > div.remote_cont > div.pg_area > span.total").text))
+                            final[comic_type_index].append(None)
+                            
+                            # thumbnail image link
+                            final[comic_type_index].append(comic_soup.find("meta", attrs={"property": "og:image"}).get("content"))
+                        except AttributeError:
+                            print("[ERROR] Error while parsing naver comic")
+                            print(format_exc())
+                            return
             except AttributeError:
                 print("[ERROR] No episodes in comic")
                 print(format_exc())
                 return
+        
+        elif mode == COMIC_TYPE_DAUM:
+            comics.append([])
+            
+            for comic_type_index in range(len(comics)):
+                final[comic_type_index].append(COMIC_TYPE_DAUM)
+        
         elif mode == COMIC_TYPE_KAKAO:
-            pass
+            comics.append([])
+    
+            for comic_type_index in range(len(comics)):
+                final[comic_type_index].append(COMIC_TYPE_KAKAO)
         
         if not final:
             self.sig.emit(self.MODE_UPDATE_UI, (self.UI_LABEL_ERROR, "No search result"))
@@ -855,21 +850,19 @@ class ScrollMessageBox(QtWidgets.QMessageBox):
 
 
 class ComicGroupBox(QtWidgets.QGroupBox):
-    """
-    search_result:
-        0 list episodes
-        1 str title
-        2 str comic URL
-        3 str synopsis
-        4 str authors
-        5 str last date of update
-        6 str total episodes
-        7 str thumbnail
-    """
     def __init__(self, comic_data):
+        # 0: type
+        # 1: title
+        # 2: titleId
+        # 3: comic URL
+        # 4: synopsis
+        # 5: author
+        # 6: latest update
+        # 7: number of episodes
+        # 8: thumbnail image link
+        
         super(ComicGroupBox, self).__init__()
-        self.EPISODES = comic_data[0]
-        self.COMIC = comic_data[2]
+        self.comic_data = comic_data
         
         self.setFixedSize(760, 170)
         self.setStyleSheet("QGroupBox {border:0 ; background-color:lightgray}")
@@ -884,7 +877,7 @@ class ComicGroupBox(QtWidgets.QGroupBox):
         thumbnail.setAlignment(QtCore.Qt.AlignVCenter)
         thumbnail.move(10, 10)
         
-        response = requests.get(comic_data[7], stream=True)
+        response = requests.get(comic_data[8], stream=True)
         if response.status_code == 200:
             image = QtGui.QImage()
             image.loadFromData(response.content)
@@ -898,27 +891,27 @@ class ComicGroupBox(QtWidgets.QGroupBox):
         title.move(220, 10)
         
         # Authors
-        authors = QtWidgets.QLabel(comic_data[4], self)
+        authors = QtWidgets.QLabel(comic_data[5], self)
         authors.setFixedSize(200, 30)
         authors.setStyleSheet("QLabel { font: 15pt}")
         authors.move(220, 41)
         
         # Last date of update
-        update = QtWidgets.QLabel("Latest: " + comic_data[5], self)
+        update = QtWidgets.QLabel("Latest: " + comic_data[6], self)
         update.setAlignment(QtCore.Qt.AlignRight)
         update.setFixedSize(200, 30)
         update.setStyleSheet("QLabel { font: 15pt}")
         update.move(550, 41)
         
         # Number of episodes
-        number_of_episodes = QtWidgets.QLabel("%s episodes" % comic_data[6], self)
+        number_of_episodes = QtWidgets.QLabel("%s episodes" % comic_data[7], self)
         number_of_episodes.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
         number_of_episodes.setFixedSize(110, 30)
         number_of_episodes.setStyleSheet("QLabel { font: 12pt}")
         number_of_episodes.move(640, 10)
         
         # Synopsis
-        synopsis = QtWidgets.QTextEdit(comic_data[3], self)
+        synopsis = QtWidgets.QTextEdit(comic_data[4], self)
         synopsis.setReadOnly(True)
         synopsis.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         synopsis.setFixedSize(450, 75)
@@ -928,7 +921,7 @@ class ComicGroupBox(QtWidgets.QGroupBox):
         # Browse
         btn_browse = QtWidgets.QPushButton(self)
         btn_browse.setToolTip("View on browser")
-        btn_browse.clicked.connect(lambda: open_new_tab(self.COMIC))
+        btn_browse.clicked.connect(lambda: open_new_tab(comic_data[3]))
         btn_browse.setFixedSize(40, 40)
         btn_browse_pixmap = QtGui.QPixmap()
         btn_browse_pixmap.loadFromData(QtCore.QByteArray.fromBase64(IMG_BROWSE))
@@ -941,23 +934,20 @@ class ComicGroupBox(QtWidgets.QGroupBox):
         btn_download.setToolTip('Download comic')
         btn_download.clicked.connect(self.download)
         btn_download.setFixedSize(40, 40)
-        btn_download_pixmap = QtGui.QPixmap()
-        btn_download_pixmap.loadFromData(QtCore.QByteArray.fromBase64(IMG_DOWNLOAD))
-        btn_download.setIconSize(QtCore.QSize(32, 32))
-        btn_download.setIcon(QtGui.QIcon(btn_download_pixmap))
+        btn_download.setIcon(IconFromBase64(IMG_DOWNLOAD))
         btn_download.move(710, 130)
         
     def download(self):
         def start_pool():
             pool = ThreadPool(3)
             
-            pool.map(download_spowiki, self.EPISODES)
+            pool.map(download_naver, self.comic_data[3])
             
             pool.close()
             pool.join()
         
         Thread(target=start_pool).start()
-        
+
 
 class IconFromBase64(QtGui.QIcon):
     def __init__(self, logo_base64, *args, **kwargs):
@@ -969,7 +959,7 @@ class IconFromBase64(QtGui.QIcon):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
-    app.setStyle("Fusion")
+    # app.setStyle("Fusion")  # For people who likes the look of Linux application
     
     screen_resolution = app.desktop().screenGeometry()
     log("[INFO] Displaying GUI")
