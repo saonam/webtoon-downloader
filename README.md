@@ -10,14 +10,10 @@ Nothing is guaranteed until the program hits version 1.0.0
 >- Basic knowledge of terminals (cmd, bash, etc.)
 
 # Installation
-> This project requires python 3
+There are two ways to run the program. You can either install the latest version on github yourself, or install the downloader through pip.<br>
+Installing manually may give you some features that are not in the pip version, but it may contain errors (sometimes a fatal one).
 
-There are two ways to run the program. You can either compile the code into and executable file, or just run the code directly.<br>
-The only difference is that compiled program takes up more space and requires `cacert.pem` file to run.<br>
-Compiled script usually takes up 370MB or more of the storage depending on the libraries installed.<br>
-This is the reason why I decided not to upload the executable file. It's faster to compile the script than to download the executable file.
-
-### build locally
+### Install manually
 1.) Clone the repository `git clone git@github.com:AnonymousPomp/webtoon-downloader.git`<br>
 2.) Navigate to where the source code is located `cd webtoon-downloader`<br>
 3.) Build package `python3 setup.py sdist bdist_wheel`<br>
