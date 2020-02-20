@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# todo: update readme.md
+# todo: fix entry_points
 # todo: fix error management
 # todo: logging
 # todo: pip install callable (alias?)
@@ -26,6 +28,7 @@ import webtoonscraper.naver
 
 from PyQt5 import QtCore, QtGui
 from threading import Thread
+import os
 
 
 class IMAGES:
@@ -85,3 +88,7 @@ class SearchThread(QtCore.QThread):
 		number_of_comics = len(result)
 		self.sig.emit(self.MODE_UPDATE_UI, (self.UI_LABEL_ERROR, "found %s %s" % (number_of_comics, " comic" if number_of_comics is 1 else " comics")))
 		self.sig.emit(self.MODE_SEARCH_RESULT, result)
+
+
+def where():
+	return os.path.dirname(__file__)

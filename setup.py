@@ -1,3 +1,6 @@
+# python3 setup.py sdist bdist_wheel
+# twine upload dist/*
+
 from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
@@ -5,7 +8,7 @@ with open("README.md", "r") as fh:
 
 _setup = setup(
 	name="webtoondownloader",
-	version="0.0.1",
+	version="0.0.2",
 	author="Anonymous Pomp",
 	author_email="anonymouspomp@gmail.com",
 	description="A python library for downloading and parsing Korean web comics",
@@ -16,6 +19,7 @@ _setup = setup(
 	url="https://github.com/AnonymousPomp/webtoon-scraper",
 	packages=find_packages(),
 	install_requires=["requests", "beautifulsoup4", "Pillow", "pyqt5", "webtoonscraper"],
+	package_data={"": ["ComicGroupBox.ui", "webtoondownloader.ui"]},
 	entry_points={
 		'console_scripts': ['webtoon-downloader=webtoondownloader.run:main'],
 	},

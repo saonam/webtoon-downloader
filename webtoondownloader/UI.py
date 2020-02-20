@@ -1,4 +1,4 @@
-from webtoondownloader import IconFromBase64, IMAGES, SearchThread, save_location
+from webtoondownloader import IconFromBase64, IMAGES, SearchThread, save_location, where
 
 import webtoonscraper.naver
 from PyQt5 import QtWidgets, QtCore, QtGui, uic
@@ -13,7 +13,7 @@ class UiComicDownloaderWindow(QtWidgets.QMainWindow):
 
 	def __init__(self, *args, **kwargs):
 		super(UiComicDownloaderWindow, self).__init__(*args, **kwargs)
-		uic.loadUi("webtoondownloader/webtoondownloader.ui", self)
+		uic.loadUi(where() + "/webtoondownloader.ui", self)
 		self.setWindowIcon(IconFromBase64(IMAGES.IMG_LOGO_48))
 
 		self.scrollArea_results = self.findChild(QtWidgets.QScrollArea, "scrollArea_results")
@@ -113,7 +113,7 @@ class ComicGroupBox(QtWidgets.QGroupBox):
 		# thumbnail
 
 		super(ComicGroupBox, self).__init__()
-		uic.loadUi("webtoondownloader/ComicGroupBox.ui", self)
+		uic.loadUi(where() + "/ComicGroupBox.ui", self)
 		self.comic_data = comic_data
 		self.comic_URL = comic_data[0] if comic_data else "https://google.com"
 
